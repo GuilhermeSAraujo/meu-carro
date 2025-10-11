@@ -1,22 +1,23 @@
 {
   "name": "meu-carro",
   "version": "0.0.0",
-  "description": "",
-  "main": "index.js",
+  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "turbo run build",
+    "clean": "turbo run clean",
+    "dev": "turbo run dev",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "lint": "turbo run lint",
+    "test": "turbo run test"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/GuilhermeSAraujo/meu-carro.git"
-  },
-  "author": "GuilhermeSAraujo",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/GuilhermeSAraujo/meu-carro/issues"
-  },
-  "homepage": "https://github.com/GuilhermeSAraujo/meu-carro#readme",
-  "dependencies": {
+  "dependencies": {},
+  "devDependencies": {
+    "prettier": "^3.2.5",
     "turbo": "^2.5.8"
-  }
+  },
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=7.0.0"
+  },
+  "packageManager": "pnpm@10.18.1"
 }
