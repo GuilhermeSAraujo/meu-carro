@@ -6,7 +6,6 @@
 !**/.next/standalone/
 **/README.md
 **/.npmrc
-**/src/
 !**/.next/standalone/**/src/
 **/gha-creds-*.json
 **/.DS_Store
