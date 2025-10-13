@@ -9,22 +9,28 @@ RUN apk update
 RUN apk add --no-cache libc6-compat
 # Set working directory
 WORKDIR /app
-RUN yarn global add turbo
+# Habilitar corepack para usar pnpm
+RUN corepack enable
+RUN corepack prepare pnpm@10.18.1 --activate
 COPY . .
-RUN turbo prune web --docker
+RUN npx turbo prune web --docker
 
 # Add lockfile and package.json's of isolated subworkspace
 FROM base AS installer
 RUN apk update
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
+# Habilitar corepack
+RUN corepack enable
+RUN corepack prepare pnpm@10.18.1 --activate
 
 # First install the dependencies (as they change less often)
 COPY --from=builder /app/out/json/ .
-RUN yarn install
+RUN pnpm install
 
 # Build the project
 COPY --from=builder /app/out/full/ .
+RUN pnpm turbo build
 
 # Uncomment and use build args to enable remote caching
 # ARG TURBO_TEAM
@@ -32,8 +38,6 @@ COPY --from=builder /app/out/full/ .
 
 # ARG TURBO_TOKEN
 # ENV TURBO_TOKEN=$TURBO_TOKEN
-
-RUN yarn turbo build
 
 FROM base AS runner
 WORKDIR /app

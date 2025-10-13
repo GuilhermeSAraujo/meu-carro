@@ -9,9 +9,11 @@ RUN apk update
 RUN apk add --no-cache libc6-compat
 # Set working directory
 WORKDIR /app
-RUN yarn global add turbo
+# Habilitar corepack para usar pnpm
+RUN corepack enable
+RUN corepack prepare pnpm@10.18.1 --activate
 COPY . .
-RUN turbo prune api --docker
+RUN npx turbo prune api --docker
 
 # Add lockfile and package.json's of isolated subworkspace
 FROM base AS installer
@@ -19,9 +21,13 @@ RUN apk update
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
+# Habilitar corepack no installer também
+RUN corepack enable
+RUN corepack prepare pnpm@10.18.1 --activate
+
 # First install dependencies (as they change less often)
 COPY --from=builder /app/out/json/ .
-RUN yarn install
+RUN pnpm install
 
 # Build the project and its dependencies
 COPY --from=builder /app/out/full/ .
@@ -33,15 +39,15 @@ COPY --from=builder /app/out/full/ .
 # ARG TURBO_TOKEN
 # ENV TURBO_TOKEN=$TURBO_TOKEN
 
-RUN yarn turbo build
+RUN pnpm turbo build
 
 FROM base AS runner
 WORKDIR /app
 
 # Don't run production as root
-RUN addgroup --system --gid 1001 expressjs
-RUN adduser --system --uid 1001 expressjs
-USER expressjs
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nodejs
+USER nodejs
 COPY --from=installer /app .
 
-CMD node apps/api/dist/index.js
+CMD node apps/api/dist/main.js

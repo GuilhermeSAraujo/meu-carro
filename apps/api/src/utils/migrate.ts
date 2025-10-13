@@ -9,7 +9,7 @@ export async function migrate(args: { pool?: pg.Pool } = {}) {
 
   process.stdout.write("Migrating database...\n");
   await _migrate(db, {
-    migrationsFolder: path.resolve(import.meta.dirname, "../database", "migrations"),
+    migrationsFolder: path.resolve(__dirname, "../database", "migrations"),
   });
   process.stdout.write("Done ✅\n");
   if (!args.pool) {

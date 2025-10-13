@@ -1,21 +1,38 @@
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
 
-export async function useUserServer() {
+type UnauthenticatedUser = {
+  isAuthenticated: false;
+  name?: undefined;
+  email?: undefined;
+  image?: undefined;
+  fullName?: undefined;
+};
+
+type AuthenticatedUser = {
+  isAuthenticated: true;
+  name: string;
+  email: string | null | undefined;
+  image: string | null | undefined;
+  fullName: string | null | undefined;
+};
+
+export async function useUserServer(): Promise<UnauthenticatedUser | AuthenticatedUser> {
   const session = await getServerSession(authOptions);
 
-  if (!session) {
+  if (!session || !session.user) {
     return {
       isAuthenticated: false,
     };
   }
 
-  const user = session?.user;
+  const user = session.user;
 
   return {
-    ...user,
+    email: user.email,
+    image: user.image,
     fullName: user.name,
-    name: user.name.split(" ")[0],
-    isAuthenticated: !!user,
+    name: user.name?.split(" ")[0] ?? "Usuário",
+    isAuthenticated: true,
   };
 }

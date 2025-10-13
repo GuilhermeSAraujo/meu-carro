@@ -1,4 +1,5 @@
 import type { Logger } from "drizzle-orm";
+import { logger } from "@repo/logger";
 import { drizzle } from "drizzle-orm/node-postgres";
 import pg from "pg";
 import { schema } from "./schema";
