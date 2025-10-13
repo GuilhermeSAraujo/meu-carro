@@ -18,7 +18,10 @@
     "@repo/logger": "workspace:*",
     "body-parser": "^2.2.0",
     "cors": "^2.8.5",
-    "hono": "^4.9.10"
+    "drizzle-orm": "^0.44.6",
+    "hono": "^4.9.10",
+    "pg": "^8.16.3",
+    "pino": "^10.0.0"
   },
   "devDependencies": {
     "@jest/globals": "^30.2.0",
@@ -28,7 +31,9 @@
     "@types/body-parser": "^1.19.6",
     "@types/cors": "^2.8.19",
     "@types/node": "^24.7.1",
+    "@types/pg": "^8.15.5",
     "@types/supertest": "^6.0.3",
+    "drizzle-kit": "^0.31.5",
     "esbuild": "^0.25.10",
     "esbuild-register": "^3.6.0",
     "eslint": "^9.37.0",

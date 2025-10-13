@@ -1,0 +1,15 @@
+name: 'meu-carro'
+
+services:
+  db:
+    container_name: 'db-meu-carro'
+    build:
+      context: .
+      args:
+        - PG_DOCKER_TAG=17.2-alpine
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: 'postgres'
+      POSTGRES_PASSWORD: 'postgres'
+      POSTGRES_DB: 'meu-carro'

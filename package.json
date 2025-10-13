@@ -8,7 +8,10 @@
     "dev": "turbo run dev",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "lint": "turbo run lint",
-    "test": "turbo run test"
+    "test": "turbo run test",
+    "docker:up": "docker compose -f compose.yaml up -d",
+    "docker:down": "docker compose -f compose.yaml down",
+    "orm:migrate": "vite-node apps/api/src/migrate.ts"
   },
   "devDependencies": {
     "prettier": "^3.6.2",
@@ -20,6 +23,8 @@
   },
   "packageManager": "pnpm@10.18.1",
   "dependencies": {
+    "dotenv": "^17.2.3",
+    "vite-node": "^3.2.4",
     "zod": "^4.1.12"
   }
 }

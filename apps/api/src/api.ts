@@ -1,13 +1,7 @@
 import { Hono } from "hono";
 import { handleCors } from "./middleware/cors";
+import { authRoute } from "./auth/auth.route";
 
-export const api = new Hono()
-  .use(handleCors())
-  .get("/message/:name", (c) => {
-    return c.json({ message: `hello ${c.req.param("name")}` });
-  })
-  .get("/status", (c) => {
-    return c.json({ ok: true });
-  });
+export const api = new Hono().use(handleCors()).route("/auth", authRoute);
 
 export type ApiSchema = typeof api;

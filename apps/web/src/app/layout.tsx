@@ -1,11 +1,20 @@
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+import { Toaster } from "@/components/ui/sonner";
+import "./globals.css";
+import { Providers } from "@/app/providers";
+import { Navbar } from "@/components/header/navbar";
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <Providers>
+          <main>
+            <Navbar />
+            {children}
+            <Toaster />
+          </main>
+        </Providers>
+      </body>
     </html>
   );
 }

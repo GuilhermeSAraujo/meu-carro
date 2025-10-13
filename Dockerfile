@@ -1,0 +1,3 @@
+ARG PG_DOCKER_TAG=17.2-alpine
+
+FROM postgres:${PG_DOCKER_TAG}

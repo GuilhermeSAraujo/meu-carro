@@ -1,5 +1,5 @@
 import { serve } from "@hono/node-server";
-
+import "dotenv/config";
 import { api } from "./api";
 
 const server = serve(
