@@ -10,6 +10,10 @@ export const authOptions: AuthOptions = {
   ],
   callbacks: {
     async signIn({ user }) {
+      console.log(
+        "Calling API to sign in with Google",
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/google`
+      );
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/google`, {
         method: "POST",
         headers: {
@@ -22,6 +26,8 @@ export const authOptions: AuthOptions = {
           profilePicture: user.image,
         }),
       });
+
+      console.log("Response from API", res);
 
       if (!res.ok) {
         throw new Error("Failed to sign in with Google");
