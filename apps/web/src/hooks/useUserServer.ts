@@ -19,6 +19,7 @@ type AuthenticatedUser = {
 
 export async function useUserServer(): Promise<UnauthenticatedUser | AuthenticatedUser> {
   const session = await getServerSession(authOptions);
+  console.log("User Server Session", session);
 
   if (!session || !session.user) {
     return {
