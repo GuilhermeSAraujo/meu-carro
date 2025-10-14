@@ -4,11 +4,11 @@ import { authRoute } from "./auth/auth.route";
 import { handleAuth } from "./middleware/auth";
 
 export const api = new Hono()
+  .get("/healthz", (c) => c.json({ ok: true }))
   .use(
     handleCors()
     // handleAuth()
   )
-  .route("/auth", authRoute)
-  .get("/healthz", (c) => c.json({ ok: true }));
+  .route("/auth", authRoute);
 
 export type ApiSchema = typeof api;
