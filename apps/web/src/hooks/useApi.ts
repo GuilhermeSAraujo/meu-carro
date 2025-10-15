@@ -24,10 +24,9 @@ export function useApi<T = any>(endpoint: string | null, options?: UseApiOptions
   const fetcher = async (url: string) => {
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${process.env.API_SECRET}`,
       ...customHeaders,
     };
-
-    headers["Authorization"] = `Bearer ${process.env.API_SECRET}`;
 
     const requestOptions: RequestInit = {
       method,

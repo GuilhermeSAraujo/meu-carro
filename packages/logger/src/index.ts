@@ -17,4 +17,8 @@ export const logger = {
   error: (message: any) => {
     console.error("[ERROR]", JSON.stringify(message, null, 2));
   },
+  fatal: (message: any) => {
+    console.error("[FATAL]", JSON.stringify(message, null, 2));
+    process.exit(1);
+  },
 };

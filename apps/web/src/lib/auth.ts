@@ -39,6 +39,7 @@ export const authOptions: AuthOptions = {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.API_SECRET}`,
         },
         body: JSON.stringify({
           googleId: user.id,

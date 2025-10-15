@@ -5,10 +5,7 @@ import { handleAuth } from "./middleware/auth";
 
 export const api = new Hono()
   .get("/healthz", (c) => c.json({ ok: true }))
-  .use(
-    handleCors()
-    // handleAuth()
-  )
+  .use(handleCors(), handleAuth())
   .route("/auth", authRoute);
 
 export type ApiSchema = typeof api;
