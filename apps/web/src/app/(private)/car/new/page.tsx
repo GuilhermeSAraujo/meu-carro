@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import {
   Accordion,
   AccordionContent,
@@ -26,6 +27,8 @@ import {
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 const data = {
   Fiat: [
     { model: "Uno", years: "2000~2014" },
@@ -140,11 +143,50 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 export default function NewCarPage() {
+  const router = useRouter();
+
   const form = useForm<FormData>({
     resolver: zodResolver(schema as any),
+    defaultValues: {
+      brand: "",
+      model: "",
+      year: "" as any,
+      kilometers: "" as any,
+      licensePlate: "",
+      tankVolume: "" as any,
+      chassis: "",
+      renavam: "",
+    },
   });
 
   const selectedBrand = form.watch("brand");
+
+  const onSubmit = async (data: FormData) => {
+    try {
+      console.log("Dados do formulário:", data);
+
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // save on local storage
+      const carsData = JSON.parse(localStorage.getItem("carsData") || "[]");
+      if (carsData) {
+        localStorage.setItem("carsData", JSON.stringify([...carsData, data]));
+      } else {
+        localStorage.setItem("carsData", JSON.stringify([data]));
+      }
+
+      toast.success(`${data.model}/${data.year} cadastrado com sucesso!`);
+
+      form.reset();
+
+      router.push("/home");
+    } catch (error) {
+      console.error("Erro ao cadastrar carro:", error);
+      toast.error("Erro ao cadastrar carro", {
+        description: "Tente novamente mais tarde.",
+      });
+    }
+  };
 
   return (
     <Card>
@@ -156,7 +198,7 @@ export default function NewCarPage() {
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
               name="brand"
@@ -299,6 +341,16 @@ export default function NewCarPage() {
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
+
+            <div className="flex justify-end pt-4">
+              <Button
+                type="submit"
+                disabled={form.formState.isSubmitting}
+                className="w-full sm:w-auto"
+              >
+                {form.formState.isSubmitting ? "Cadastrando..." : "Cadastrar Carro"}
+              </Button>
+            </div>
           </form>
         </Form>
       </CardContent>
