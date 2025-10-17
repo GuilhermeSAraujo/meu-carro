@@ -74,8 +74,6 @@ export const Navbar = async ({
 }: NavbarProps) => {
   const user = await useUserServer();
 
-  console.log("User in Navbar:", user);
-
   return (
     <section className="py-4 sticky top-0 z-50 w-full bg-gradient-to-r from-primary/10 via-background to-primary/10 backdrop-blur-md border-b border-border/40 shadow-sm">
       <div>
