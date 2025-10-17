@@ -24,11 +24,27 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Separator } from "@/components/ui/separator";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { fetchApi } from "@/hooks/useApi";
+import {
+  Car,
+  Calendar,
+  Gauge,
+  Hash,
+  Fuel,
+  FileText,
+  CreditCard,
+  ChevronDown,
+  Plus,
+  CheckCircle,
+  AlertCircle,
+  Truck,
+} from "lucide-react";
 const data = {
   Fiat: [
     { model: "Uno", years: "2000~2014" },
@@ -135,7 +151,7 @@ const schema = z.object({
     .number({ invalid_type_error: "Digite um número válido" })
     .positive("Volume deve ser maior que 0")
     .optional()
-    .or(z.literal("")),
+    .default(50),
   chassis: z.string().optional(),
   renavam: z.string().optional(),
 });
@@ -153,7 +169,7 @@ export default function NewCarPage() {
       year: "" as any,
       kilometers: "" as any,
       licensePlate: "",
-      tankVolume: "" as any,
+      tankVolume: 50,
       chassis: "",
       renavam: "",
     },
@@ -163,17 +179,21 @@ export default function NewCarPage() {
 
   const onSubmit = async (data: FormData) => {
     try {
-      console.log("Dados do formulário:", data);
+      const carData = {
+        brand: data.brand,
+        model: data.model,
+        year: data.year,
+        kilometers: data.kilometers,
+        licensePlate: data.licensePlate || undefined,
+        tankVolume: data.tankVolume,
+        chassis: data.chassis || undefined,
+        renavam: data.renavam || undefined,
+      };
 
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // save on local storage
-      const carsData = JSON.parse(localStorage.getItem("carsData") || "[]");
-      if (carsData) {
-        localStorage.setItem("carsData", JSON.stringify([...carsData, data]));
-      } else {
-        localStorage.setItem("carsData", JSON.stringify([data]));
-      }
+      await fetchApi("/cars", {
+        method: "POST",
+        body: carData,
+      });
 
       toast.success(`${data.model}/${data.year} cadastrado com sucesso!`);
 
@@ -191,164 +211,234 @@ export default function NewCarPage() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Dados do carro</CardTitle>
-        <CardDescription>
-          Essas informações são para seu controle, portanto adicione o que julgar necessário
-        </CardDescription>
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-primary/10 rounded-lg">
+            <Car className="h-6 w-6 text-primary" />
+          </div>
+          <div>
+            <CardTitle className="flex items-center gap-2">Dados do carro</CardTitle>
+            <CardDescription className="mt-1">
+              Essas informações são para seu controle, portanto adicione o que julgar necessário
+            </CardDescription>
+          </div>
+        </div>
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="brand"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Marca</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione a marca" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {brands.map((brand) => (
-                        <SelectItem key={brand} value={brand}>
-                          {brand}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="model"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Modelo</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    disabled={!selectedBrand}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione o modelo" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {models(selectedBrand).map((model) => (
-                        <SelectItem key={model} value={model}>
-                          {model}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="year"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Ano</FormLabel>
-                  <FormControl>
-                    <Input type="number" placeholder="Ex: 2020" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="kilometers"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Quilometragem (Km)</FormLabel>
-                  <FormControl>
-                    <Input type="number" placeholder="Ex: 50000" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            {/* Informações Básicas */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                Informações Básicas
+              </div>
 
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="brand"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="flex items-center gap-2">
+                        <Car className="h-4 w-4" />
+                        Marca
+                      </FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione a marca" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {brands.map((brand) => (
+                            <SelectItem key={brand} value={brand}>
+                              {brand}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="model"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="flex items-center gap-2">
+                        <FileText className="h-4 w-4" />
+                        Modelo
+                      </FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        disabled={!selectedBrand}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione o modelo" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {models(selectedBrand).map((model) => (
+                            <SelectItem key={model} value={model}>
+                              {model}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="year"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="flex items-center gap-2">
+                        <Calendar className="h-4 w-4" />
+                        Ano
+                      </FormLabel>
+                      <FormControl>
+                        <Input type="number" placeholder="Ex: 2020" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="kilometers"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="flex items-center gap-2">
+                        <Gauge className="h-4 w-4" />
+                        Quilometragem (Km)
+                      </FormLabel>
+                      <FormControl>
+                        <Input type="number" placeholder="Ex: 50000" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+
+            <Separator />
+
+            {/* Campos Opcionais */}
             <Accordion type="single" collapsible className="w-full">
               <AccordionItem value="optional-fields" className="border-0">
-                <AccordionTrigger className="text-muted-foreground hover:no-underline">
-                  Campos opcionais
+                <AccordionTrigger className="text-muted-foreground hover:no-underline py-4">
+                  <div className="flex items-center gap-2">
+                    <Plus className="h-4 w-4" />
+                    Campos opcionais
+                  </div>
                 </AccordionTrigger>
                 <AccordionContent>
                   <div className="space-y-4 pt-2">
-                    <FormField
-                      control={form.control}
-                      name="licensePlate"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Placa</FormLabel>
-                          <FormControl>
-                            <Input type="text" placeholder="Ex: ABC-1234" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="tankVolume"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Volume do Tanque (Litros)</FormLabel>
-                          <FormControl>
-                            <Input type="number" placeholder="Ex: 50" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="chassis"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Chassi</FormLabel>
-                          <FormControl>
-                            <Input type="text" placeholder="Ex: 9BWZZZ377VT004251" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="renavam"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Renavam</FormLabel>
-                          <FormControl>
-                            <Input type="text" placeholder="Ex: 00000000000" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="licensePlate"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="flex items-center gap-2">
+                              <Hash className="h-4 w-4" />
+                              Placa
+                            </FormLabel>
+                            <FormControl>
+                              <Input type="text" placeholder="Ex: ABC-1234" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="tankVolume"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="flex items-center gap-2">
+                              <Fuel className="h-4 w-4" />
+                              Volume do Tanque (Litros)
+                            </FormLabel>
+                            <FormControl>
+                              <Input type="number" placeholder="Ex: 50" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="chassis"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="flex items-center gap-2">
+                              <FileText className="h-4 w-4" />
+                              Chassi
+                            </FormLabel>
+                            <FormControl>
+                              <Input type="text" placeholder="Ex: 9BWZZZ377VT004251" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="renavam"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="flex items-center gap-2">
+                              <CreditCard className="h-4 w-4" />
+                              Renavam
+                            </FormLabel>
+                            <FormControl>
+                              <Input type="text" placeholder="Ex: 00000000000" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
                   </div>
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
 
+            <Separator />
+
             <div className="flex justify-end pt-4">
               <Button
                 type="submit"
                 disabled={form.formState.isSubmitting}
-                className="w-full sm:w-auto"
+                className="w-full sm:w-auto gap-2"
               >
-                {form.formState.isSubmitting ? "Cadastrando..." : "Cadastrar Carro"}
+                {form.formState.isSubmitting ? (
+                  <>
+                    <AlertCircle className="h-4 w-4 animate-spin" />
+                    Cadastrando...
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle className="h-4 w-4" />
+                    Cadastrar Carro
+                  </>
+                )}
               </Button>
             </div>
           </form>

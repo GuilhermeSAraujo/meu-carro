@@ -1,4 +1,4 @@
-import { Book, Menu, Sunset, Trees, Zap } from "lucide-react";
+import { Book, Car, Menu, Plus, Sunset, Trees, Zap } from "lucide-react";
 
 import {
   Accordion,
@@ -15,13 +15,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useUserServer } from "@/hooks/useUserServer";
 import LogoutButton from "./logout-button";
 
@@ -61,10 +55,11 @@ export const Navbar = async ({
     title: "MeuCarro",
   },
   menu = [
-    { title: "Meus carros", url: "/" },
+    { title: "Meus carros", url: "/", icon: <Car className="size-5" /> },
     {
       title: "Novo Carro",
       url: "/car/new",
+      icon: <Plus className="size-5" />,
     },
   ],
   auth = {
@@ -82,20 +77,12 @@ export const Navbar = async ({
           <div className="flex items-center gap-6">
             {/* Logo */}
             <a href={logo.url} className="flex items-center gap-2">
-              <img
-                src={logo.src}
-                className="max-h-8 dark:invert"
-                alt={logo.alt}
-              />
-              <span className="text-lg font-semibold tracking-tighter">
-                {logo.title}
-              </span>
+              <img src={logo.src} className="max-h-8 dark:invert" alt={logo.alt} />
+              <span className="text-lg font-semibold tracking-tighter">{logo.title}</span>
             </a>
             <div className="flex items-center">
               <NavigationMenu>
-                <NavigationMenuList>
-                  {menu.map((item) => renderMenuItem(item))}
-                </NavigationMenuList>
+                <NavigationMenuList>{menu.map((item) => renderMenuItem(item))}</NavigationMenuList>
               </NavigationMenu>
             </div>
           </div>
@@ -124,11 +111,7 @@ export const Navbar = async ({
           <div className="flex items-center justify-between">
             {/* Logo */}
             <a href={logo.url} className="flex items-center gap-2">
-              <img
-                src={logo.src}
-                className="max-h-8 dark:invert"
-                alt={logo.alt}
-              />
+              <img src={logo.src} className="max-h-8 dark:invert" alt={logo.alt} />
             </a>
             <Sheet>
               <SheetTrigger asChild>
@@ -140,20 +123,12 @@ export const Navbar = async ({
                 <SheetHeader>
                   <SheetTitle>
                     <a href={logo.url} className="flex items-center gap-2">
-                      <img
-                        src={logo.src}
-                        className="max-h-8 dark:invert"
-                        alt={logo.alt}
-                      />
+                      <img src={logo.src} className="max-h-8 dark:invert" alt={logo.alt} />
                     </a>
                   </SheetTitle>
                 </SheetHeader>
                 <div className="flex flex-col gap-6 p-4">
-                  <Accordion
-                    type="single"
-                    collapsible
-                    className="flex w-full flex-col gap-4"
-                  >
+                  <Accordion type="single" collapsible className="flex w-full flex-col gap-4">
                     {menu.map((item) => renderMobileMenuItem(item))}
                   </Accordion>
 
@@ -207,7 +182,9 @@ const renderMenuItem = (item: MenuItem) => {
         href={item.url}
         className="bg-background hover:bg-muted hover:text-accent-foreground group inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors"
       >
-        {item.title}
+        <div className="text-foreground flex items-center gap-2">
+          {item.icon} {item.title}
+        </div>
       </NavigationMenuLink>
     </NavigationMenuItem>
   );
@@ -246,9 +223,7 @@ const SubMenuLink = ({ item }: { item: MenuItem }) => {
       <div>
         <div className="text-sm font-semibold">{item.title}</div>
         {item.description && (
-          <p className="text-muted-foreground text-sm leading-snug">
-            {item.description}
-          </p>
+          <p className="text-muted-foreground text-sm leading-snug">{item.description}</p>
         )}
       </div>
     </a>

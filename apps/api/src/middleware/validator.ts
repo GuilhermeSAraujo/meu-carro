@@ -1,3 +1,4 @@
+import { logger } from "@repo/logger";
 import type { MiddlewareHandler } from "hono";
 import { z } from "zod/v4";
 
@@ -30,6 +31,7 @@ export function jsonValidator<T extends z.ZodType>(
     const result = await schema.safeParseAsync(value);
 
     if (!result.success) {
+      logger.error("JSON mal formado", { error: result.error });
       throw new Error("JSON mal formado");
     }
 
