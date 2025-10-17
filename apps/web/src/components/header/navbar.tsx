@@ -15,8 +15,15 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { useUserServer } from "@/hooks/useUserServer";
+import LogoutButton from "./logout-button";
 
 interface MenuItem {
   title: string;
@@ -48,80 +55,16 @@ interface NavbarProps {
 
 export const Navbar = async ({
   logo = {
-    url: "https://www.shadcnblocks.com",
+    url: "/",
     src: "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/logos/shadcnblockscom-icon.svg",
     alt: "MeuCarro logo",
     title: "MeuCarro",
   },
   menu = [
-    { title: "Home", url: "#" },
+    { title: "Meus carros", url: "/" },
     {
-      title: "Products",
-      url: "#",
-      items: [
-        {
-          title: "Blog",
-          description: "The latest industry news, updates, and info",
-          icon: <Book className="size-5 shrink-0" />,
-          url: "#",
-        },
-        {
-          title: "Company",
-          description: "Our mission is to innovate and empower the world",
-          icon: <Trees className="size-5 shrink-0" />,
-          url: "#",
-        },
-        {
-          title: "Careers",
-          description: "Browse job listing and discover our workspace",
-          icon: <Sunset className="size-5 shrink-0" />,
-          url: "#",
-        },
-        {
-          title: "Support",
-          description: "Get in touch with our support team or visit our community forums",
-          icon: <Zap className="size-5 shrink-0" />,
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Resources",
-      url: "#",
-      items: [
-        {
-          title: "Help Center",
-          description: "Get all the answers you need right here",
-          icon: <Zap className="size-5 shrink-0" />,
-          url: "#",
-        },
-        {
-          title: "Contact Us",
-          description: "We are here to help you with any questions you have",
-          icon: <Sunset className="size-5 shrink-0" />,
-          url: "#",
-        },
-        {
-          title: "Status",
-          description: "Check the current status of our services and APIs",
-          icon: <Trees className="size-5 shrink-0" />,
-          url: "#",
-        },
-        {
-          title: "Terms of Service",
-          description: "Our terms and conditions for using our services",
-          icon: <Book className="size-5 shrink-0" />,
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Pricing",
-      url: "#",
-    },
-    {
-      title: "Blog",
-      url: "#",
+      title: "Novo Carro",
+      url: "/car/new",
     },
   ],
   auth = {
@@ -131,6 +74,8 @@ export const Navbar = async ({
 }: NavbarProps) => {
   const user = await useUserServer();
 
+  console.log("User in Navbar:", user);
+
   return (
     <section className="py-4 sticky top-0 z-50 w-full bg-gradient-to-r from-primary/10 via-background to-primary/10 backdrop-blur-md border-b border-border/40 shadow-sm">
       <div>
@@ -139,25 +84,41 @@ export const Navbar = async ({
           <div className="flex items-center gap-6">
             {/* Logo */}
             <a href={logo.url} className="flex items-center gap-2">
-              <img src={logo.src} className="max-h-8 dark:invert" alt={logo.alt} />
-              <span className="text-lg font-semibold tracking-tighter">{logo.title}</span>
+              <img
+                src={logo.src}
+                className="max-h-8 dark:invert"
+                alt={logo.alt}
+              />
+              <span className="text-lg font-semibold tracking-tighter">
+                {logo.title}
+              </span>
             </a>
             <div className="flex items-center">
               <NavigationMenu>
-                <NavigationMenuList>{menu.map((item) => renderMenuItem(item))}</NavigationMenuList>
+                <NavigationMenuList>
+                  {menu.map((item) => renderMenuItem(item))}
+                </NavigationMenuList>
               </NavigationMenu>
             </div>
           </div>
-          {!user.isAuthenticated && (
-            <div className="flex gap-2">
-              <Button asChild variant="outline" size="sm">
-                <a href="/login">{auth.login.title}</a>
-              </Button>
-              <Button asChild size="sm">
-                <a href="/login">{auth.signup.title}</a>
-              </Button>
-            </div>
-          )}
+          <div>
+            {!user.isAuthenticated && (
+              <div className="flex gap-3">
+                <Button asChild variant="outline">
+                  <a href="/login">{auth.login.title}</a>
+                </Button>
+                <Button asChild>
+                  <a href="/login">{auth.signup.title}</a>
+                </Button>
+              </div>
+            )}
+
+            {user.isAuthenticated && (
+              <div className="flex">
+                <LogoutButton />
+              </div>
+            )}
+          </div>
         </nav>
 
         {/* Mobile Menu */}
@@ -165,7 +126,11 @@ export const Navbar = async ({
           <div className="flex items-center justify-between">
             {/* Logo */}
             <a href={logo.url} className="flex items-center gap-2">
-              <img src={logo.src} className="max-h-8 dark:invert" alt={logo.alt} />
+              <img
+                src={logo.src}
+                className="max-h-8 dark:invert"
+                alt={logo.alt}
+              />
             </a>
             <Sheet>
               <SheetTrigger asChild>
@@ -177,25 +142,41 @@ export const Navbar = async ({
                 <SheetHeader>
                   <SheetTitle>
                     <a href={logo.url} className="flex items-center gap-2">
-                      <img src={logo.src} className="max-h-8 dark:invert" alt={logo.alt} />
+                      <img
+                        src={logo.src}
+                        className="max-h-8 dark:invert"
+                        alt={logo.alt}
+                      />
                     </a>
                   </SheetTitle>
                 </SheetHeader>
                 <div className="flex flex-col gap-6 p-4">
-                  <Accordion type="single" collapsible className="flex w-full flex-col gap-4">
+                  <Accordion
+                    type="single"
+                    collapsible
+                    className="flex w-full flex-col gap-4"
+                  >
                     {menu.map((item) => renderMobileMenuItem(item))}
                   </Accordion>
 
-                  {!user.isAuthenticated && (
-                    <div className="flex flex-col gap-3">
-                      <Button asChild variant="outline">
-                        <a href="/login">{auth.login.title}</a>
-                      </Button>
-                      <Button asChild>
-                        <a href="/login">{auth.signup.title}</a>
-                      </Button>
-                    </div>
-                  )}
+                  <div>
+                    {!user.isAuthenticated && (
+                      <div className="flex flex-col gap-3">
+                        <Button asChild variant="outline">
+                          <a href="/login">{auth.login.title}</a>
+                        </Button>
+                        <Button asChild>
+                          <a href="/login">{auth.signup.title}</a>
+                        </Button>
+                      </div>
+                    )}
+
+                    {user.isAuthenticated && (
+                      <div className="flex">
+                        <LogoutButton />
+                      </div>
+                    )}
+                  </div>
                 </div>
               </SheetContent>
             </Sheet>
@@ -267,7 +248,9 @@ const SubMenuLink = ({ item }: { item: MenuItem }) => {
       <div>
         <div className="text-sm font-semibold">{item.title}</div>
         {item.description && (
-          <p className="text-muted-foreground text-sm leading-snug">{item.description}</p>
+          <p className="text-muted-foreground text-sm leading-snug">
+            {item.description}
+          </p>
         )}
       </div>
     </a>
