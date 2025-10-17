@@ -6,6 +6,17 @@ import { useEffect } from "react";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
+async function waitForSession(maxRetries = 3, delay = 1000): Promise<string | null> {
+  for (let i = 0; i < maxRetries; i++) {
+    const session = await getSession();
+    if (session?.user?.email) {
+      return session.user.email;
+    }
+    await new Promise((resolve) => setTimeout(resolve, delay));
+  }
+  return null;
+}
+
 interface UseApiOptions extends SWRConfiguration {
   method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
   body?: any;
@@ -39,10 +50,12 @@ export function useApi<T = any>(endpoint: string | null, options?: UseApiOptions
   } = options || {};
 
   const fetcher = async (url: string) => {
+    const userEmail = session?.user?.email || (await waitForSession());
+
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
       Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_SECRET}`,
-      email: session?.user?.email || "unauthorized",
+      email: userEmail || "unauthorized",
       ...customHeaders,
     };
 
@@ -78,7 +91,6 @@ export function useApi<T = any>(endpoint: string | null, options?: UseApiOptions
     ...swrOptions,
   });
 
-  // Exibir toast de erro automaticamente
   useEffect(() => {
     if (error && showErrorToast) {
       toast.error(error.message || "Erro ao carregar dados");
@@ -97,12 +109,13 @@ export function useApi<T = any>(endpoint: string | null, options?: UseApiOptions
 export async function fetchApi<T = any>(endpoint: string, options?: FetchApiOptions): Promise<T> {
   const { method = "GET", body, headers: customHeaders } = options || {};
 
-  const session = await getSession();
+  // Wait for session to be available
+  const userEmail = await waitForSession();
 
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
     Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_SECRET}`,
-    email: session?.user?.email || "unauthorized",
+    email: userEmail || "unauthorized",
     ...customHeaders,
   };
 

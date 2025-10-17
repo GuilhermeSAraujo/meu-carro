@@ -30,7 +30,6 @@ export default function Home() {
               <Car />
             </EmptyMedia>
             <EmptyTitle>Você ainda não possui nenhum carro cadastrado</EmptyTitle>
-            {/* <EmptyDescription>Para exibir dados</EmptyDescription> */}
           </EmptyHeader>
           <EmptyContent>
             <Button asChild>
