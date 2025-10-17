@@ -14,8 +14,12 @@ export const logger = {
   warn: (message: any) => {
     console.warn("[WARN]", JSON.stringify(message, null, 2));
   },
-  error: (message: any) => {
-    console.error("[ERROR]", JSON.stringify(message, null, 2));
+  error: (message: any, context?: any) => {
+    console.error(
+      "[ERROR]",
+      JSON.stringify(message, null, 2),
+      context ? JSON.stringify(context, null, 2) : ""
+    );
   },
   fatal: (message: any) => {
     console.error("[FATAL]", JSON.stringify(message, null, 2));

@@ -31,10 +31,6 @@ export const authOptions: AuthOptions = {
   ],
   callbacks: {
     async signIn({ user }) {
-      console.log(
-        "Calling API to sign in with Google",
-        `${process.env.NEXT_PUBLIC_API_URL}/auth/google`
-      );
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/google`, {
         method: "POST",
         headers: {
@@ -49,18 +45,33 @@ export const authOptions: AuthOptions = {
         }),
       });
 
-      console.log("Response from API", res);
-
       if (!res.ok) {
         throw new Error("Failed to sign in with Google");
       }
 
+      const userData = await res.json();
+
+      user.id = userData.id;
+
       return true;
+    },
+    async jwt({ token, user }) {
+      // Se é o primeiro login, adiciona o id do usuário ao token
+      if (user) {
+        token.id = user.id;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (token.id) {
+        session.user.id = token.id;
+      }
+      return session;
     },
   },
   pages: {
     signIn: "/login",
-    error: "/login", // Redireciona erros para a página de login
+    error: "/login",
   },
   session: {
     strategy: "jwt",

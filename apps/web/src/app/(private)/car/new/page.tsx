@@ -29,6 +29,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { fetchApi } from "@/hooks/useApi";
 const data = {
   Fiat: [
     { model: "Uno", years: "2000~2014" },
@@ -135,7 +136,7 @@ const schema = z.object({
     .number({ invalid_type_error: "Digite um número válido" })
     .positive("Volume deve ser maior que 0")
     .optional()
-    .or(z.literal("")),
+    .default(50),
   chassis: z.string().optional(),
   renavam: z.string().optional(),
 });
@@ -153,7 +154,7 @@ export default function NewCarPage() {
       year: "" as any,
       kilometers: "" as any,
       licensePlate: "",
-      tankVolume: "" as any,
+      tankVolume: 50,
       chassis: "",
       renavam: "",
     },
@@ -163,17 +164,21 @@ export default function NewCarPage() {
 
   const onSubmit = async (data: FormData) => {
     try {
-      console.log("Dados do formulário:", data);
+      const carData = {
+        brand: data.brand,
+        model: data.model,
+        year: data.year,
+        kilometers: data.kilometers,
+        licensePlate: data.licensePlate || undefined,
+        tankVolume: data.tankVolume,
+        chassis: data.chassis || undefined,
+        renavam: data.renavam || undefined,
+      };
 
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // save on local storage
-      const carsData = JSON.parse(localStorage.getItem("carsData") || "[]");
-      if (carsData) {
-        localStorage.setItem("carsData", JSON.stringify([...carsData, data]));
-      } else {
-        localStorage.setItem("carsData", JSON.stringify([data]));
-      }
+      await fetchApi("/cars", {
+        method: "POST",
+        body: carData,
+      });
 
       toast.success(`${data.model}/${data.year} cadastrado com sucesso!`);
 
