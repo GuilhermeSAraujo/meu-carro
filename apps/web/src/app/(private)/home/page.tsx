@@ -8,13 +8,16 @@ import { Empty, EmptyContent, EmptyHeader, EmptyMedia, EmptyTitle } from "@/comp
 import { useUserCars } from "@/hooks/useUserCars";
 import { Car, Plus } from "lucide-react";
 import Link from "next/link";
+import { FuelDialogProvider } from "@/hooks/home/useFuelDialog";
+import CreateFuelEntry from "@/components/home/create-fuel-entry";
 
 export default function Home() {
-  const { cars: carsData, isLoading } = useUserCars();
+  const { cars: carsData, isLoading = true } = useUserCars();
 
   if (isLoading) {
     return (
-      <div className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <CardSkeleton />
         <CardSkeleton />
         <CardSkeleton />
       </div>
@@ -44,10 +47,13 @@ export default function Home() {
   }
 
   return (
-    <section className="space-y-4">
-      {carsData.map((car: any) => (
-        <CarCard key={car.model} car={car} />
-      ))}
-    </section>
+    <FuelDialogProvider>
+      <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {carsData.map((car: any) => (
+          <CarCard key={car.model} car={car} />
+        ))}
+      </section>
+      <CreateFuelEntry />
+    </FuelDialogProvider>
   );
 }

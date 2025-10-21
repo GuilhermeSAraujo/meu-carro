@@ -1,5 +1,12 @@
 "use client";
 
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Form,
@@ -9,6 +16,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -16,35 +24,25 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 import { Separator } from "@/components/ui/separator";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 import { fetchApi } from "@/hooks/useApi";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  Car,
+  AlertCircle,
   Calendar,
+  Car,
+  CheckCircle,
+  CreditCard,
+  FileText,
+  Fuel,
   Gauge,
   Hash,
-  Fuel,
-  FileText,
-  CreditCard,
-  ChevronDown,
   Plus,
-  CheckCircle,
-  AlertCircle,
-  Truck,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
 const data = {
   Fiat: [
     { model: "Uno", years: "2000~2014" },

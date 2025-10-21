@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -7,8 +9,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Text } from "@/components/ui/text";
-import { Car, Calendar, Gauge, CreditCard, Fuel, Hash, Info, Wrench } from "lucide-react";
+import { Car, Fuel, Wrench } from "lucide-react";
+import FuelHistory from "../home/fuel-history";
+import MaintenanceHistory from "../home/maintenance-history";
+import { useFuelDialog } from "@/hooks/home/useFuelDialog";
 
 interface CarData {
   brand: string;
@@ -22,6 +26,8 @@ interface CarData {
 }
 
 export default function CarCard({ car }: { car: CarData }) {
+  const { openDialog } = useFuelDialog();
+
   const formatNumber = (num: number) => {
     return new Intl.NumberFormat("pt-BR").format(num);
   };
@@ -44,81 +50,27 @@ export default function CarCard({ car }: { car: CarData }) {
         </div>
       </CardHeader>
       <CardContent>
-        <section className="flex items-start gap-3">
-          <div className="self-center">
-            <Fuel className="h-6 w-6 text-yellow-600 mt-1" />
+        <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex-1">
+            <FuelHistory />
           </div>
-          <div className="flex-1 space-y-2">
-            <Text variant="p" className="!m-0">
-              {new Date().toLocaleDateString("pt-BR", {
-                day: "2-digit",
-                month: "2-digit",
-                year: "2-digit",
-              })}{" "}
-              - <span className="font-bold">R$5,90/L</span>
-            </Text>
-            <Text variant="small" className="!m-0 text-gray-500">
-              {new Date().toLocaleDateString("pt-BR", {
-                day: "2-digit",
-                month: "2-digit",
-                year: "2-digit",
-              })}{" "}
-              - <span className="font-bold">R$5,90/L</span>
-            </Text>
-            <Text variant="small" className="!m-0 text-gray-500">
-              {new Date().toLocaleDateString("pt-BR", {
-                day: "2-digit",
-                month: "2-digit",
-                year: "2-digit",
-              })}{" "}
-              - <span className="font-bold">R$5,90/L</span>
-            </Text>
+          <div className="flex-1">
+            <MaintenanceHistory />
           </div>
-        </section>
-
-        <section className="flex items-start gap-3 mt-4">
-          <div className="self-center">
-            <Wrench className="h-6 w-6 text-emerald-900 mt-1" />
-          </div>
-          <div className="flex-1 space-y-2">
-            <Text variant="p" className="!m-0">
-              {new Date().toLocaleDateString("pt-BR", {
-                day: "2-digit",
-                month: "2-digit",
-                year: "2-digit",
-              })}{" "}
-              - <span className="font-bold">Troca de óleo</span>
-            </Text>
-            <Text variant="small" className="!m-0 text-gray-500">
-              {new Date().toLocaleDateString("pt-BR", {
-                day: "2-digit",
-                month: "2-digit",
-                year: "2-digit",
-              })}{" "}
-              - <span className="font-bold">Troca de pastilhas de freio</span>
-            </Text>
-            <Text variant="small" className="!m-0 text-gray-500">
-              {new Date().toLocaleDateString("pt-BR", {
-                day: "2-digit",
-                month: "2-digit",
-                year: "2-digit",
-              })}{" "}
-              - <span className="font-bold">Troca de pneu</span>
-            </Text>
-          </div>
-        </section>
+        </div>
       </CardContent>
       <CardFooter className="gap-2">
         <Button
           variant="outline"
-          className="flex-1 aspect-square bg-yellow-200 hover:bg-yellow-300"
+          className="flex-1 aspect-square bg-yellow-200 hover:bg-yellow-300 cursor-pointer"
           size="icon-lg"
+          onClick={openDialog}
         >
           <Fuel className="h-6 w-6 text-yellow-600" />
         </Button>
         <Button
           variant="outline"
-          className="flex-1 aspect-square bg-green-100 hover:bg-green-200"
+          className="flex-1 aspect-square bg-green-100 hover:bg-green-200 cursor-pointer"
           size="icon-lg"
         >
           <Wrench className="h-6 w-6 text-emerald-900" />
