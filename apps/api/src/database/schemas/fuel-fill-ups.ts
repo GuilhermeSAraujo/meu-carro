@@ -1,9 +1,8 @@
-import { sql } from "drizzle-orm";
-import { pgTable, timestamp, boolean } from "drizzle-orm/pg-core";
-import { getBaseTimestampColumns } from "./helpers";
 import { authUsers } from "@/database/schemas/auth-users";
+import { sql } from "drizzle-orm";
+import { foreignKey, pgTable } from "drizzle-orm/pg-core";
 import { cars } from "./cars";
-import { foreignKey } from "drizzle-orm/pg-core";
+import { getBaseTimestampColumns } from "./helpers";
 
 export const fuelFillUps = pgTable(
   "fuel_fill_ups",

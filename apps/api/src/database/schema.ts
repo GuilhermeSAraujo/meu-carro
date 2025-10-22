@@ -7,5 +7,5 @@ export const schema = {
   authUsers,
   cars,
   fuelFillUps,
-  maintenance
+  maintenance,
 };
