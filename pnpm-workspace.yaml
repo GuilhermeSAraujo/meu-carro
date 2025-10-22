@@ -1,3 +1,28 @@
 packages:
   - "apps/*"
   - "packages/*"
+
+catalog:
+  # React ecosystem
+  react: ^18.2.0
+  react-dom: ^18.2.0
+  next: ^14.1.1
+  
+  # TypeScript
+  typescript: 5.9.3
+  "@types/node": ^24.7.1
+  "@types/react": ^18.2.61
+  "@types/react-dom": ^18.2.19
+  
+  # Validation
+  zod: ^3.24.1
+  
+  # Linting
+  eslint: ^9.37.0
+  
+  # Testing
+  jest: ^30.2.0
+  
+  # UI Libraries
+  "lucide-react": ^0.545.0
+  "tailwindcss": ^4.1.14
