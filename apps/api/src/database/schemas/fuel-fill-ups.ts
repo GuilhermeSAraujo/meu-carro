@@ -12,8 +12,9 @@ export const fuelFillUps = pgTable
         carId: t.uuid().references(() => cars.id).notNull(),
         date: t.timestamp().notNull(),
         km: t.integer().notNull(),
-        volume: t.integer().notNull(),
+        volume: t.numeric({precision: 10, scale: 2}).notNull(),
         price: t.numeric({precision: 10, scale: 2}).notNull(), //Verificar com Gui.
+        totalPrice: t.numeric({precision: 10, scale: 2}).notNull(),
         fuelType: t.varchar({length: 50}).notNull(),
         isFullTank: t.boolean().notNull().default(false),
         ...getBaseTimestampColumns(t),

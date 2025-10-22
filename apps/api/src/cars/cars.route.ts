@@ -1,4 +1,4 @@
-import { carsJsonInput } from "@/cars/auth.input";
+import { carsJsonInput } from "@/cars/cars.input";
 import { db } from "@/database/db";
 import { cars } from "@/database/schemas/cars";
 import type { Context } from "@/types/context";
