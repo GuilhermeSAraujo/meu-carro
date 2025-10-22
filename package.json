@@ -10,8 +10,7 @@
     "lint": "turbo run lint",
     "test": "turbo run test",
     "docker:up": "docker compose -f compose.yaml up -d",
-    "docker:down": "docker compose -f compose.yaml down",
-    "orm:migrate": "vite-node apps/api/src/migrate.ts"
+    "docker:down": "docker compose -f compose.yaml down"
   },
   "devDependencies": {
     "prettier": "^3.6.2",

@@ -5,15 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1761097559934,
-      "tag": "0000_noisy_puck",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1761097666075,
-      "tag": "0001_heavy_dreaming_celestial",
+      "when": 1761098502480,
+      "tag": "0000_panoramic_lyja",
       "breakpoints": true
     }
   ]

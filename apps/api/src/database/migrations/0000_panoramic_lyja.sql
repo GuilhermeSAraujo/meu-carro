@@ -49,7 +49,7 @@ CREATE TABLE "maintenances" (
 	"date" timestamp NOT NULL,
 	"km" integer NOT NULL,
 	"type" varchar(100) NOT NULL,
-	"price" numeric(10, 2) NOT NULL,
+	"price" real NOT NULL,
 	"local" varchar(255) NOT NULL,
 	"created_at" timestamp (2) with time zone DEFAULT now(),
 	"updated_at" timestamp (2) with time zone,
