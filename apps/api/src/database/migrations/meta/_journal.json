@@ -8,6 +8,13 @@
       "when": 1760295992810,
       "tag": "000_init_db",
       "breakpoints": false
+    },
+    {
+      "idx": 1,
+      "version": "5", 
+      "when": 1760296992810,
+      "tag": "001_fuel_maintenance_tables",
+      "breakpoints": false
     }
   ]
 }

@@ -11,7 +11,7 @@ Salvar valor do Seguro? (Posteriormente criar tabela despesa, seguro será um ti
 Criação do fluxo de despesa
 - Criar endpoint /api/src/cars/:carId/expense
     /api/cars/:carId/expenses/
-    ├── POST /fuel 
+    ├── POST /fuel
     ├── POST /maintenance
     - POST: /cars/:carId/expenses/fuel
     - Criar schema: user_id, car_id, date, Km, volume (L), price, fuel_type, is_full_tank (bool).
