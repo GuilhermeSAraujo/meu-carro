@@ -25,6 +25,8 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { useEffect } from "react";
 
+import { FUEL_TYPE_OPTIONS } from "@repo/domain-definitions";
+
 const fuelSchema = z
   .object({
     date: z.string().min(1, "Data é obrigatória"),
@@ -256,9 +258,9 @@ export default function CreateFuelEntry() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {FUEL_TYPES.map((type) => (
-                          <SelectItem key={type.value} value={type.value}>
-                            {type.label}
+                        {FUEL_TYPE_OPTIONS.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
                           </SelectItem>
                         ))}
                       </SelectContent>

@@ -10,6 +10,8 @@ import { Car, Plus } from "lucide-react";
 import Link from "next/link";
 import { FuelDialogProvider } from "@/hooks/home/useFuelDialog";
 import CreateFuelEntry from "@/components/home/create-fuel-entry";
+import { MaintenanceDialogProvider } from "@/hooks/home/useMaintenanceDialog";
+import CreateMaintenanceEntry from "@/components/home/create-maintenance-entry";
 
 export default function Home() {
   const { cars: carsData, isLoading = true } = useUserCars();
@@ -48,12 +50,15 @@ export default function Home() {
 
   return (
     <FuelDialogProvider>
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {carsData.map((car: any) => (
-          <CarCard key={car.model} car={car} />
-        ))}
-      </section>
-      <CreateFuelEntry />
+      <MaintenanceDialogProvider>
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {carsData.map((car: any) => (
+            <CarCard key={car.model} car={car} />
+          ))}
+        </section>
+        <CreateFuelEntry />
+        <CreateMaintenanceEntry />
+      </MaintenanceDialogProvider>
     </FuelDialogProvider>
   );
 }

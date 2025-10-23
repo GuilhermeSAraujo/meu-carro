@@ -13,6 +13,7 @@ import { Car, Fuel, Wrench } from "lucide-react";
 import FuelHistory from "../home/fuel-history";
 import MaintenanceHistory from "../home/maintenance-history";
 import { useFuelDialog } from "@/hooks/home/useFuelDialog";
+import { useMaintenanceDialog } from "@/hooks/home/useMaintenanceDialog";
 
 interface CarData {
   brand: string;
@@ -26,7 +27,8 @@ interface CarData {
 }
 
 export default function CarCard({ car }: { car: CarData }) {
-  const { openDialog } = useFuelDialog();
+  const { openDialog: openFuelDialog } = useFuelDialog();
+  const { openDialog: openMaintenanceDialog } = useMaintenanceDialog();
 
   const formatNumber = (num: number) => {
     return new Intl.NumberFormat("pt-BR").format(num);
@@ -64,7 +66,7 @@ export default function CarCard({ car }: { car: CarData }) {
           variant="outline"
           className="flex-1 aspect-square bg-yellow-200 hover:bg-yellow-300 cursor-pointer"
           size="icon-lg"
-          onClick={openDialog}
+          onClick={openFuelDialog}
         >
           <Fuel className="h-6 w-6 text-yellow-600" />
         </Button>
@@ -72,6 +74,7 @@ export default function CarCard({ car }: { car: CarData }) {
           variant="outline"
           className="flex-1 aspect-square bg-green-100 hover:bg-green-200 cursor-pointer"
           size="icon-lg"
+          onClick={openMaintenanceDialog}
         >
           <Wrench className="h-6 w-6 text-emerald-900" />
         </Button>

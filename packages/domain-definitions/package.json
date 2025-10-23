@@ -1,0 +1,42 @@
+{
+  "name": "@repo/domain-definitions",
+  "version": "0.1.0",
+  "description": "Domain definitions and enums for the meu-carro application",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    },
+    "./fuel-types": {
+      "types": "./dist/fuel-types.d.ts",
+      "import": "./dist/fuel-types.js",
+      "require": "./dist/fuel-types.js"
+    },
+    "./maintenance-types": {
+      "types": "./dist/maintenance-types.d.ts",
+      "import": "./dist/maintenance-types.js",
+      "require": "./dist/maintenance-types.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "keywords": [
+    "typescript",
+    "enums",
+    "domain",
+    "definitions"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

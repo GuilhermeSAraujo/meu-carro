@@ -13,11 +13,14 @@ Criação do fluxo de despesa
     /api/cars/:carId/expenses/
     ├── POST /fuel
     ├── POST /maintenance
-    - POST: /cars/:carId/expenses/fuel
-    - Criar schema: user_id, car_id, date, Km, volume (L), price, fuel_type, is_full_tank (bool).
 
-    - POST: /cars/:carId/expenses/maintenance
-    - Criar schema: user_id, car_id, date, Km, type, price, local.
+    Kaicao
+    ├──- POST: /cars/:carId/expenses/fuel
+    ├──- Criar schema: user_id, car_id, date, Km, volume (L), price, fuel_type, is_full_tank (bool).
+
+    Guizin
+    ├──- POST: /cars/:carId/expenses/maintenance
+    ├──- Criar schema: user_id, car_id, date, Km, type, price, local.
 
 - Migration (DDL) + adicionar no _journal.json (entender melhor pra que serve esse journal)
 
