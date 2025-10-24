@@ -45,8 +45,7 @@ export const fuelRoute = new Hono<Context>().post(
         eq(fuelFillUps.userId, userId),
         eq(fuelFillUps.carId, carId)
       )
-    )
-      .orderBy(fuelFillUps.date);
+    ).orderBy(fuelFillUps.date);
 
     return c.json({
       success: true,
@@ -134,5 +133,45 @@ export const fuelRoute = new Hono<Context>().post(
       success: true,
       message: "Erro interno do servidor"
     }, 500);
+  }
+}).delete("/:carId/:fuelId", async (c) => {
+  try{
+    const userId = c.get("userId");
+    const carId = c.req.param("carId");
+    const fuelId = c.req.param("fuelId");
+
+    const [existingEntry] = await db.select().from(fuelFillUps).where(
+      and(
+        eq(fuelFillUps.userId, userId),
+        eq(fuelFillUps.carId, carId),
+        eq(fuelFillUps.id, fuelId)
+      )
+    ).limit(1);
+
+    if(!existingEntry){
+      return c.json({
+        succes: false,
+        message: "Registro de abastecimento não encontrado"
+      }, 404);
+    }
+
+    await db.delete(fuelFillUps).where(
+      and(
+        eq(fuelFillUps.userId, userId),
+        eq(fuelFillUps.carId, carId),
+        eq(fuelFillUps.id, fuelId)
+      )
+    );
+    return c.json({
+      success: true,
+      message: "Registro de abastecimento deletado com sucesso"
+    },200);
+  }
+  catch(error){
+    console.error("Error ao deletar registro de abastecimento", error);
+    return c.json({
+      succes: false,
+      message: " Erro interno do servidor"
+    },500);
   }
 });
