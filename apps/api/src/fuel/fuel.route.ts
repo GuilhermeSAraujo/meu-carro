@@ -1,177 +1,166 @@
-import { fuelJsonInput } from "./fuel.input";
 import { db } from "@/database/db";
 import { fuelFillUps } from "@/database/schemas/fuel-fill-ups";
 import type { Context } from "@/types/context";
 import { and, eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { jsonValidator } from "../middleware/validator";
-import { success } from "zod/v4";
+import { fuelJsonInput } from "./fuel.input";
 
-export const fuelRoute = new Hono<Context>().post(
-  "/:carId",
-  jsonValidator(fuelJsonInput),
-  async (c) => {
-    try {
-      const userId = c.get("userId");
-      const carId = c.req.param("carId");
-      const fuelData = c.req.valid("json");
+export const fuelRoute = new Hono<Context>()
+  .post("/:carId", jsonValidator(fuelJsonInput), async (c) => {
+    const userId = c.get("userId");
+    const carId = c.req.param("carId");
+    const fuelData = c.req.valid("json");
 
-      const newFuelEntry = await db.insert(fuelFillUps).values({
+    const [newFuelEntry] = await db
+      .insert(fuelFillUps)
+      .values({
         ...fuelData,
         userId,
         carId,
-      }).returning();
+      })
+      .returning();
 
-      return c.json({
-        succes: true,
-        data: newFuelEntry[0],
-      }, 201);
-
-    } catch (error) {
-      console.error("Error ao criar registro de abastecimento", error);
-      return c.json({
-        success: false,
-        message: "Erro interno do servidor"
-      }, 500);
-    }
-  }
-).get("/:carId", async (c) => {
-  try {
+    return c.json(
+      {
+        success: true,
+        data: newFuelEntry,
+      },
+      201
+    );
+  })
+  .get("/:carId", async (c) => {
     const userId = c.get("userId");
     const carId = c.req.param("carId");
 
-    const fuelEntries = await db.select().from(fuelFillUps).where(
-      and(
-        eq(fuelFillUps.userId, userId),
-        eq(fuelFillUps.carId, carId)
-      )
-    ).orderBy(fuelFillUps.date);
+    const fuelEntries = await db
+      .select()
+      .from(fuelFillUps)
+      .where(and(eq(fuelFillUps.userId, userId), eq(fuelFillUps.carId, carId)))
+      .orderBy(fuelFillUps.date);
 
     return c.json({
       success: true,
       data: fuelEntries,
-    }, 200);
-  }
-  catch (error) {
-    console.error("Error ao buscar registros de abastecimento", error);
-    return c.json({
-      succes: false,
-      message: " Erro interno do servidor"
     });
-  }
-}).get("/:carId/:fuelId", async (c) => {
-  try {
+  })
+  .get("/:carId/:fuelId", async (c) => {
     const userId = c.get("userId");
     const carId = c.req.param("carId");
     const fuelId = c.req.param("fuelId");
 
-    const [fuelEntry] = await db.select().from(fuelFillUps).where(
-      and(
-        eq(fuelFillUps.userId, userId),
-        eq(fuelFillUps.carId, carId),
-        eq(fuelFillUps.id, fuelId)
+    const [fuelEntry] = await db
+      .select()
+      .from(fuelFillUps)
+      .where(
+        and(
+          eq(fuelFillUps.userId, userId),
+          eq(fuelFillUps.carId, carId),
+          eq(fuelFillUps.id, fuelId)
+        )
       )
-    ).limit(1);
+      .limit(1);
 
     if (!fuelEntry) {
-      return c.json({
-        succes: false,
-        message: "Registro de abastecimento não encontrado"
-      }, 404);
+      return c.json(
+        {
+          succes: false,
+          message: "Registro de abastecimento não encontrado",
+        },
+        404
+      );
     }
     return c.json({
       success: true,
       data: fuelEntry,
-    }, 200)
-  }
-  catch (error) {
-    console.error("Error ao buscar registro de abastecimento", error);
-    return c.json({
-      succes: false,
-      message: " Erro interno do servidor"
     });
-  }
-}).put("/:carId/:fuelId", jsonValidator(fuelJsonInput), async (c) => {
-  try {
+  })
+  .put("/:carId/:fuelId", jsonValidator(fuelJsonInput), async (c) => {
     const userId = c.get("userId");
     const carId = c.req.param("carId");
     const fuelId = c.req.param("fuelId");
     const fuelData = c.req.valid("json");
 
-    const [existingFuelEntry] = await db.select().from(fuelFillUps).where(
-      and(
-        eq(fuelFillUps.userId, userId),
-        eq(fuelFillUps.carId, carId),
-        eq(fuelFillUps.id, fuelId)
+    const [existingFuelEntry] = await db
+      .select()
+      .from(fuelFillUps)
+      .where(
+        and(
+          eq(fuelFillUps.userId, userId),
+          eq(fuelFillUps.carId, carId),
+          eq(fuelFillUps.id, fuelId)
+        )
       )
-    ).limit(1);
+      .limit(1);
 
     if (!existingFuelEntry) {
-      return c.json({
-        succes: false,
-        message: "Registro de abastecimento não encontrado"
-      }, 404);
+      return c.json(
+        {
+          succes: false,
+          message: "Registro de abastecimento não encontrado",
+        },
+        404
+      );
     }
 
-    const updatedFuelEntry = await db.update(fuelFillUps).set({
-      ...fuelData,
-      updatedAt: new Date(),
-    }).where(
-      and(
-        eq(fuelFillUps.userId, userId),
-        eq(fuelFillUps.carId, carId),
-        eq(fuelFillUps.id, fuelId)
+    const updatedFuelEntry = await db
+      .update(fuelFillUps)
+      .set({
+        ...fuelData,
+        updatedAt: new Date(),
+      })
+      .where(
+        and(
+          eq(fuelFillUps.userId, userId),
+          eq(fuelFillUps.carId, carId),
+          eq(fuelFillUps.id, fuelId)
+        )
       )
-    ).returning();
+      .returning();
 
     return c.json({
       success: true,
-      data: updatedFuelEntry[0]
+      data: updatedFuelEntry[0],
     });
-  } catch (error) {
-    return c.json({
-      success: true,
-      message: "Erro interno do servidor"
-    }, 500);
-  }
-}).delete("/:carId/:fuelId", async (c) => {
-  try{
+  })
+  .delete("/:carId/:fuelId", async (c) => {
     const userId = c.get("userId");
     const carId = c.req.param("carId");
     const fuelId = c.req.param("fuelId");
 
-    const [existingEntry] = await db.select().from(fuelFillUps).where(
-      and(
-        eq(fuelFillUps.userId, userId),
-        eq(fuelFillUps.carId, carId),
-        eq(fuelFillUps.id, fuelId)
+    const [existingEntry] = await db
+      .select()
+      .from(fuelFillUps)
+      .where(
+        and(
+          eq(fuelFillUps.userId, userId),
+          eq(fuelFillUps.carId, carId),
+          eq(fuelFillUps.id, fuelId)
+        )
       )
-    ).limit(1);
+      .limit(1);
 
-    if(!existingEntry){
-      return c.json({
-        succes: false,
-        message: "Registro de abastecimento não encontrado"
-      }, 404);
+    if (!existingEntry) {
+      return c.json(
+        {
+          succes: false,
+          message: "Registro de abastecimento não encontrado",
+        },
+        404
+      );
     }
 
-    await db.delete(fuelFillUps).where(
-      and(
-        eq(fuelFillUps.userId, userId),
-        eq(fuelFillUps.carId, carId),
-        eq(fuelFillUps.id, fuelId)
-      )
-    );
+    await db
+      .delete(fuelFillUps)
+      .where(
+        and(
+          eq(fuelFillUps.userId, userId),
+          eq(fuelFillUps.carId, carId),
+          eq(fuelFillUps.id, fuelId)
+        )
+      );
     return c.json({
       success: true,
-      message: "Registro de abastecimento deletado com sucesso"
-    },200);
-  }
-  catch(error){
-    console.error("Error ao deletar registro de abastecimento", error);
-    return c.json({
-      succes: false,
-      message: " Erro interno do servidor"
-    },500);
-  }
-});
+      message: "Registro de abastecimento deletado com sucesso",
+    });
+  });
