@@ -13,8 +13,8 @@
     "docker:down": "docker compose -f compose.yaml down"
   },
   "devDependencies": {
-    "prettier": "^3.6.2",
-    "turbo": "^2.5.8"
+    "prettier": "catalog:",
+    "turbo": "catalog:"
   },
   "engines": {
     "node": ">=14.0.0",
@@ -22,8 +22,8 @@
   },
   "packageManager": "pnpm@10.18.1",
   "dependencies": {
-    "dotenv": "^17.2.3",
-    "vite-node": "^3.2.4",
+    "dotenv": "catalog:",
+    "vite-node": "catalog:",
     "zod": "catalog:"
   }
 }

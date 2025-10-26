@@ -1,20 +1,20 @@
 "use client";
 
+import CreateFuelEntry from "@/components/home/create-fuel-entry";
+import CreateMaintenanceEntry from "@/components/home/create-maintenance-entry";
 import CarCard from "@/components/shared/car-card";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import CardSkeleton from "@/components/ui/card-skeleton";
 import { Empty, EmptyContent, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
+import { FuelDialogProvider } from "@/hooks/home/useFuelDialog";
+import { MaintenanceDialogProvider } from "@/hooks/home/useMaintenanceDialog";
 import { useUserCars } from "@/hooks/useUserCars";
 import { Car, Plus } from "lucide-react";
 import Link from "next/link";
-import { FuelDialogProvider } from "@/hooks/home/useFuelDialog";
-import CreateFuelEntry from "@/components/home/create-fuel-entry";
-import { MaintenanceDialogProvider } from "@/hooks/home/useMaintenanceDialog";
-import CreateMaintenanceEntry from "@/components/home/create-maintenance-entry";
 
 export default function Home() {
-  const { cars: carsData, isLoading = true } = useUserCars();
+  const { cars: carsData, isLoading } = useUserCars();
 
   if (isLoading) {
     return (

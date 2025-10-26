@@ -12,6 +12,6 @@
   },
   "dependencies": {
     "jest": "catalog:",
-    "ts-jest": "^29.2.5"
+    "ts-jest": "catalog:"
   }
 }

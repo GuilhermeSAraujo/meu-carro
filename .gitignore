@@ -35,3 +35,6 @@ yarn-error.log*
 
 # turbo
 .turbo
+
+# types
+apps/web/src/@types/schema.d.ts

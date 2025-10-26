@@ -9,13 +9,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useFuelDialog } from "@/hooks/home/useFuelDialog";
+import { useMaintenanceDialog } from "@/hooks/home/useMaintenanceDialog";
 import { Car, Fuel, Wrench } from "lucide-react";
 import FuelHistory from "../home/fuel-history";
 import MaintenanceHistory from "../home/maintenance-history";
-import { useFuelDialog } from "@/hooks/home/useFuelDialog";
-import { useMaintenanceDialog } from "@/hooks/home/useMaintenanceDialog";
 
 interface CarData {
+  id: string;
   brand: string;
   model: string;
   year: number;
@@ -54,7 +55,7 @@ export default function CarCard({ car }: { car: CarData }) {
       <CardContent>
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1">
-            <FuelHistory />
+            <FuelHistory carId={car.id} />
           </div>
           <div className="flex-1">
             <MaintenanceHistory />
@@ -66,7 +67,7 @@ export default function CarCard({ car }: { car: CarData }) {
           variant="outline"
           className="flex-1 aspect-square bg-yellow-200 hover:bg-yellow-300 cursor-pointer"
           size="icon-lg"
-          onClick={openFuelDialog}
+          onClick={() => openFuelDialog(car.id)}
         >
           <Fuel className="h-6 w-6 text-yellow-600" />
         </Button>

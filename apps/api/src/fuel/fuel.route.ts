@@ -1,10 +1,11 @@
 import { db } from "@/database/db";
 import { fuelFillUps } from "@/database/schemas/fuel-fill-ups";
 import type { Context } from "@/types/context";
+import { HttpError } from "@/utils/throwError";
 import { and, eq } from "drizzle-orm";
 import { Hono } from "hono";
-import { jsonValidator } from "../middleware/validator";
-import { fuelJsonInput } from "./fuel.input";
+import { jsonValidator, queryValidator } from "../middleware/validator";
+import { fuelJsonInput, getFuelHistoryQueryInput } from "./fuel.input";
 
 export const fuelRoute = new Hono<Context>()
   .post("/:carId", jsonValidator(fuelJsonInput), async (c) => {
@@ -12,37 +13,48 @@ export const fuelRoute = new Hono<Context>()
     const carId = c.req.param("carId");
     const fuelData = c.req.valid("json");
 
-    const [newFuelEntry] = await db
-      .insert(fuelFillUps)
-      .values({
-        ...fuelData,
-        userId,
-        carId,
-      })
-      .returning();
-
-    return c.json(
-      {
-        success: true,
-        data: newFuelEntry,
+    const car = await db.query.cars.findFirst({
+      where: (cols) => eq(cols.id, carId),
+      columns: {
+        kilometers: true,
       },
-      201
-    );
+    });
+
+    if (!car) {
+      throw new HttpError("Carro não encontrado", 404);
+    }
+
+    if (fuelData.km <= car.kilometers) {
+      throw new HttpError("A kilometragem deve ser maior que a última registrada", 400);
+    }
+
+    await db.insert(fuelFillUps).values({
+      ...fuelData,
+      userId,
+      carId,
+    });
+
+    return c.json({}, 201);
   })
-  .get("/:carId", async (c) => {
+  .get("/:carId", queryValidator(getFuelHistoryQueryInput), async (c) => {
     const userId = c.get("userId");
     const carId = c.req.param("carId");
+    const query = c.req.valid("query");
 
-    const fuelEntries = await db
-      .select()
-      .from(fuelFillUps)
-      .where(and(eq(fuelFillUps.userId, userId), eq(fuelFillUps.carId, carId)))
-      .orderBy(fuelFillUps.date);
+    const r = await (query?.maxResult
+      ? db
+          .select()
+          .from(fuelFillUps)
+          .where(and(eq(fuelFillUps.userId, userId), eq(fuelFillUps.carId, carId)))
+          .orderBy(fuelFillUps.date)
+          .limit(query.maxResult)
+      : db
+          .select()
+          .from(fuelFillUps)
+          .where(and(eq(fuelFillUps.userId, userId), eq(fuelFillUps.carId, carId)))
+          .orderBy(fuelFillUps.date));
 
-    return c.json({
-      success: true,
-      data: fuelEntries,
-    });
+    return c.json(r);
   })
   .get("/:carId/:fuelId", async (c) => {
     const userId = c.get("userId");
@@ -62,18 +74,10 @@ export const fuelRoute = new Hono<Context>()
       .limit(1);
 
     if (!fuelEntry) {
-      return c.json(
-        {
-          succes: false,
-          message: "Registro de abastecimento não encontrado",
-        },
-        404
-      );
+      throw new HttpError("Registro de abastecimento não encontrado", 404);
     }
-    return c.json({
-      success: true,
-      data: fuelEntry,
-    });
+
+    return c.json(fuelEntry);
   })
   .put("/:carId/:fuelId", jsonValidator(fuelJsonInput), async (c) => {
     const userId = c.get("userId");
@@ -94,16 +98,10 @@ export const fuelRoute = new Hono<Context>()
       .limit(1);
 
     if (!existingFuelEntry) {
-      return c.json(
-        {
-          succes: false,
-          message: "Registro de abastecimento não encontrado",
-        },
-        404
-      );
+      throw new HttpError("Registro de abastecimento não encontrado", 404);
     }
 
-    const updatedFuelEntry = await db
+    const [updatedFuelEntry] = await db
       .update(fuelFillUps)
       .set({
         ...fuelData,
@@ -118,10 +116,7 @@ export const fuelRoute = new Hono<Context>()
       )
       .returning();
 
-    return c.json({
-      success: true,
-      data: updatedFuelEntry[0],
-    });
+    return c.json(updatedFuelEntry);
   })
   .delete("/:carId/:fuelId", async (c) => {
     const userId = c.get("userId");
@@ -141,13 +136,7 @@ export const fuelRoute = new Hono<Context>()
       .limit(1);
 
     if (!existingEntry) {
-      return c.json(
-        {
-          succes: false,
-          message: "Registro de abastecimento não encontrado",
-        },
-        404
-      );
+      throw new HttpError("Registro de abastecimento não encontrado", 404);
     }
 
     await db
@@ -159,8 +148,5 @@ export const fuelRoute = new Hono<Context>()
           eq(fuelFillUps.id, fuelId)
         )
       );
-    return c.json({
-      success: true,
-      message: "Registro de abastecimento deletado com sucesso",
-    });
+    return c.status(204);
   });

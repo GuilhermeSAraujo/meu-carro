@@ -5,7 +5,7 @@ import { Navbar } from "@/components/header/navbar";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="pt-BR">
       <body>
         <Providers>
           <main>

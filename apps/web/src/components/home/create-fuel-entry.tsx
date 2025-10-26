@@ -23,17 +23,25 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
-import { useEffect } from "react";
+import { useSession } from "next-auth/react";
 
 import { FUEL_TYPE_OPTIONS } from "@repo/domain-definitions";
+import { fetchApi } from "@/hooks/useApi";
+import { useFuelHistory } from "@/hooks/home/useFuelHistory";
 
 const fuelSchema = z
   .object({
     date: z.string().min(1, "Data é obrigatória"),
     km: z.number({ required_error: "Km é obrigatório" }).positive("Km deve ser positivo"),
-    volume: z.number().positive("Volume deve ser positivo").nullable(),
-    totalPrice: z.number().positive("Preço total deve ser positivo").nullable(),
-    pricePerLiter: z.number().positive("Preço por litro deve ser positivo").nullable(),
+    volume: z
+      .number({ required_error: "Volume é obrigatório" })
+      .positive("Volume deve ser positivo"),
+    totalPrice: z
+      .number({ required_error: "Preço total é obrigatório" })
+      .positive("Preço total deve ser positivo"),
+    pricePerLiter: z
+      .number({ required_error: "Preço por litro é obrigatório" })
+      .positive("Preço por litro deve ser positivo"),
     fuelType: z.string().min(1, "Tipo de combustível é obrigatório"),
     isFullTank: z.boolean().default(false),
   })
@@ -53,56 +61,78 @@ const fuelSchema = z
 
 type FuelFormValues = z.infer<typeof fuelSchema>;
 
-const FUEL_TYPES = [
-  { value: "gasolina_comum", label: "Gasolina Comum" },
-  { value: "gasolina_aditivada", label: "Gasolina Aditivada" },
-  { value: "etanol", label: "Etanol (Álcool)" },
-  { value: "diesel", label: "Diesel" },
-  { value: "diesel_s10", label: "Diesel S10" },
-  { value: "gnv", label: "GNV" },
-];
-
 export default function CreateFuelEntry() {
-  const { isOpen, closeDialog } = useFuelDialog();
+  const { isOpen, closeDialog, carId } = useFuelDialog();
+  const { data: session } = useSession();
+
+  const { mutate: mutateFuelHistory } = useFuelHistory({
+    carId: carId || "",
+    maxResult: 3,
+  });
 
   const form = useForm<FuelFormValues>({
     resolver: zodResolver(fuelSchema as any),
     defaultValues: {
       date: new Date().toISOString().split("T")[0],
       km: undefined,
-      volume: null,
-      totalPrice: null,
-      pricePerLiter: null,
       fuelType: "",
       isFullTank: false,
     },
   });
 
-  const volume = form.watch("volume");
-  const totalPrice = form.watch("totalPrice");
-  const pricePerLiter = form.watch("pricePerLiter");
+  // Função para calcular campos quando 2 estão preenchidos
+  const calculateMissingField = () => {
+    const v = form.getValues("volume");
+    const tp = form.getValues("totalPrice");
+    const ppl = form.getValues("pricePerLiter");
 
-  useEffect(() => {
-    // Cálculo automático quando 2 dos 3 campos estão preenchidos
-    if (volume && totalPrice && !pricePerLiter) {
+    // Verificar quais campos têm valores válidos
+    const hasVolume = v !== undefined && v !== null && v > 0;
+    const hasTotalPrice = tp !== undefined && tp !== null && tp > 0;
+    const hasPricePerLiter = ppl !== undefined && ppl !== null && ppl > 0;
+
+    // Contar quantos campos estão preenchidos
+    const filledCount = [hasVolume, hasTotalPrice, hasPricePerLiter].filter(Boolean).length;
+
+    // Se não tem exatamente 2 preenchidos, não fazer cálculo
+    if (filledCount !== 2) return;
+
+    if (hasVolume && hasTotalPrice && !hasPricePerLiter) {
       // Calcular preço por litro
-      const calculated = totalPrice / volume;
+      const calculated = tp! / v!;
       form.setValue("pricePerLiter", Number(calculated.toFixed(3)), { shouldValidate: false });
-    } else if (volume && pricePerLiter && !totalPrice) {
+    } else if (hasVolume && hasPricePerLiter && !hasTotalPrice) {
       // Calcular preço total
-      const calculated = volume * pricePerLiter;
+      const calculated = v! * ppl!;
       form.setValue("totalPrice", Number(calculated.toFixed(2)), { shouldValidate: false });
-    } else if (totalPrice && pricePerLiter && !volume) {
+    } else if (hasTotalPrice && hasPricePerLiter && !hasVolume) {
       // Calcular volume
-      const calculated = totalPrice / pricePerLiter;
+      const calculated = tp! / ppl!;
       form.setValue("volume", Number(calculated.toFixed(3)), { shouldValidate: false });
     }
-  }, [volume, totalPrice, pricePerLiter, form]);
+  };
+
+  if (!carId) {
+    return null;
+  }
 
   const onSubmit = async (data: FuelFormValues) => {
     try {
-      console.log("Dados do abastecimento:", data);
-      // TODO: Implementar chamada à API
+      await fetchApi(
+        "/fuel/:carId",
+        "$post",
+        {
+          param: {
+            carId: carId,
+          },
+          json: {
+            ...data,
+            price: data.pricePerLiter,
+          },
+        },
+        { session }
+      );
+      mutateFuelHistory();
       closeDialog();
       form.reset();
     } catch (error) {
@@ -166,32 +196,6 @@ export default function CreateFuelEntry() {
                 )}
               />
 
-              {/* Volume */}
-              <FormField
-                control={form.control}
-                name="volume"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Volume (L)</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        step="0.001"
-                        placeholder="Ex: 40.5"
-                        value={field.value ?? ""}
-                        onChange={(e) => {
-                          const value = e.target.value;
-                          field.onChange(value === "" ? null : Number(value));
-                        }}
-                        onBlur={field.onBlur}
-                        name={field.name}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
               {/* Preço Total */}
               <FormField
                 control={form.control}
@@ -207,9 +211,41 @@ export default function CreateFuelEntry() {
                         value={field.value ?? ""}
                         onChange={(e) => {
                           const value = e.target.value;
-                          field.onChange(value === "" ? null : Number(value));
+                          field.onChange(value === "" ? undefined : Number(value));
                         }}
-                        onBlur={field.onBlur}
+                        onBlur={(e) => {
+                          field.onBlur();
+                          calculateMissingField();
+                        }}
+                        name={field.name}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Volume */}
+              <FormField
+                control={form.control}
+                name="volume"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Volume (L)</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        step="0.001"
+                        placeholder="Ex: 40.5"
+                        value={field.value ?? ""}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          field.onChange(value === "" ? undefined : Number(value));
+                        }}
+                        onBlur={(e) => {
+                          field.onBlur();
+                          calculateMissingField();
+                        }}
                         name={field.name}
                       />
                     </FormControl>
@@ -233,9 +269,12 @@ export default function CreateFuelEntry() {
                         value={field.value ?? ""}
                         onChange={(e) => {
                           const value = e.target.value;
-                          field.onChange(value === "" ? null : Number(value));
+                          field.onChange(value === "" ? undefined : Number(value));
                         }}
-                        onBlur={field.onBlur}
+                        onBlur={(e) => {
+                          field.onBlur();
+                          calculateMissingField();
+                        }}
                         name={field.name}
                       />
                     </FormControl>

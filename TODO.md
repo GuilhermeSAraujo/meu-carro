@@ -38,3 +38,6 @@ Integrar com IA:
 https://github.com/googleapis/js-genai
 GEMINI_API_KEY=xxxxxxxxxxx
 gemini key ai, adicionar no .env
+
+
+Verificação da segurança de autenticação e autorização (front <-> back)

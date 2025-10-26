@@ -40,6 +40,7 @@ import {
   Plus,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -158,6 +159,7 @@ type FormData = z.infer<typeof schema>;
 
 export default function NewCarPage() {
   const router = useRouter();
+  const { data: session } = useSession();
 
   const form = useForm<FormData>({
     resolver: zodResolver(schema as any),
@@ -188,10 +190,14 @@ export default function NewCarPage() {
         renavam: data.renavam || undefined,
       };
 
-      await fetchApi("/cars", {
-        method: "POST",
-        body: carData,
-      });
+      await fetchApi(
+        "/cars",
+        "$post",
+        {
+          json: carData,
+        },
+        { session }
+      );
 
       toast.success(`${data.model}/${data.year} cadastrado com sucesso!`);
 
