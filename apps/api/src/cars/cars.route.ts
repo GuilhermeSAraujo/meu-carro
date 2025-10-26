@@ -11,9 +11,12 @@ export const carsRoute = new Hono<Context>()
     const userId = c.get("userId");
     const carData = c.req.valid("json");
 
-    await db.insert(cars).values({ ...carData, userId });
+    const [createdCar] = await db
+      .insert(cars)
+      .values({ ...carData, userId })
+      .returning();
 
-    return c.status(201);
+    return c.json(createdCar, 201);
   })
   .get("/", async (c) => {
     const userId = c.get("userId");

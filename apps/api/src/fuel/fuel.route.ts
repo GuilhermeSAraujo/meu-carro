@@ -148,5 +148,5 @@ export const fuelRoute = new Hono<Context>()
           eq(fuelFillUps.id, fuelId)
         )
       );
-    return c.status(204);
+    return c.body(null, 204);
   });
