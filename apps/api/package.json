@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build": "tsc && tsc-alias && pnpm postbuild",
-    "postbuild": "node -e \"process.exit(process.env.NODE_ENV === 'production' ? 0 : require('child_process').execSync('scripts/postbuild.sh', {stdio: 'inherit'}) || 0)\"",
+    "postbuild": "node -e \"try { if (process.env.NODE_ENV === 'production') process.exit(0); require('child_process').execSync('scripts/postbuild.sh', {stdio: 'inherit'}); } catch(e) { if (e.status === 127 || e.code === 'ENOENT') { console.log('Skipping postbuild - script not found or in production'); process.exit(0); } throw e; }\"",
     "clean": "rm -rf dist",
     "dev": "nodemon --exec \"node -r esbuild-register ./src/main.ts\" -e .ts",
     "lint": "tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0",
