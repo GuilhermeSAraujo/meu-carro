@@ -178,10 +178,6 @@ export async function fetchApi<
   if (!res.ok) {
     const errorData = data as Api.Error;
 
-    if (onError(errorData)?.expected) {
-      errorData.expected = true;
-    }
-
     throw new HttpError(res, errorData);
   }
   return data;
