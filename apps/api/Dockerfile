@@ -32,11 +32,6 @@ RUN pnpm install
 # Build the project and its dependencies
 COPY --from=builder /app/out/full/ .
 
-# Ensure scripts directory exists and has execute permissions
-# Copy the postbuild script from the original builder context
-RUN mkdir -p apps/api/scripts
-COPY --from=builder --chmod=755 /app/apps/api/scripts/postbuild.sh /app/apps/api/scripts/postbuild.sh
-
 # Uncomment and use build args to enable remote caching
 # ARG TURBO_TEAM
 # ENV TURBO_TEAM=$TURBO_TEAM

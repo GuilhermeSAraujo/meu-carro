@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build": "tsc && tsc-alias && pnpm postbuild",
-    "postbuild": "scripts/postbuild.sh",
+    "postbuild": "node -e \"process.exit(process.env.NODE_ENV === 'production' ? 0 : require('child_process').execSync('scripts/postbuild.sh', {stdio: 'inherit'}) || 0)\"",
     "clean": "rm -rf dist",
     "dev": "nodemon --exec \"node -r esbuild-register ./src/main.ts\" -e .ts",
     "lint": "tsc --noEmit && eslint \"src/**/*.ts*\" --max-warnings 0",
