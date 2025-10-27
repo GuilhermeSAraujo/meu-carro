@@ -21,7 +21,6 @@ export function useFuelHistory({ carId, maxResult }: UseFuelHistoryProps) {
     data,
     isLoading,
     mutate: () => {
-      console.log("mutate");
       mutate();
     },
   };

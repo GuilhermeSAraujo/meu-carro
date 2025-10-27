@@ -18,7 +18,7 @@ Criação do fluxo de despesa
     ├──- POST: /cars/:carId/expenses/fuel
     ├──- Criar schema: user_id, car_id, date, Km, volume (L), price, fuel_type, is_full_tank (bool).
 
-    Guizin
+    Kaicao
     ├──- POST: /cars/:carId/expenses/maintenance
     ├──- Criar schema: user_id, car_id, date, Km, type, price, local.
 

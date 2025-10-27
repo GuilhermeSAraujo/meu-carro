@@ -3,6 +3,7 @@
 import CreateFuelEntry from "@/components/home/create-fuel-entry";
 import CreateMaintenanceEntry from "@/components/home/create-maintenance-entry";
 import CarCard from "@/components/shared/car-card";
+import { PageHeader } from "@/components/shared/page-header";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import CardSkeleton from "@/components/ui/card-skeleton";
@@ -51,6 +52,7 @@ export default function Home() {
   return (
     <FuelDialogProvider>
       <MaintenanceDialogProvider>
+        <PageHeader title="Meus Carros" icon={Car} iconClassName="text-green-500" />
         <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {carsData.map((car: any) => (
             <CarCard key={car.model} car={car} />

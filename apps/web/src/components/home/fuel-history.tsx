@@ -1,5 +1,5 @@
 import { Text } from "@/components/ui/text";
-import { useFuelHistory } from "@/hooks/home/useFuelHistory";
+import { useFuelHistory } from "@/hooks/shared/useFuelHistory";
 import { Fuel } from "lucide-react";
 
 export default function FuelHistory({ carId }: { carId: string }) {

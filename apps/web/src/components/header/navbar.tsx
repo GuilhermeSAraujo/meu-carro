@@ -1,4 +1,4 @@
-import { Book, Car, Menu, Plus, Sunset, Trees, Zap } from "lucide-react";
+import { Car, Fuel, Menu, Plus } from "lucide-react";
 
 import {
   Accordion,
@@ -60,6 +60,11 @@ export const Navbar = async ({
       title: "Novo Carro",
       url: "/car/new",
       icon: <Plus className="size-5" />,
+    },
+    {
+      title: "Abastecimentos",
+      url: "/fuel",
+      icon: <Fuel className="size-5" />,
     },
   ],
   auth = {

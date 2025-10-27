@@ -27,7 +27,7 @@ import { useSession } from "next-auth/react";
 
 import { FUEL_TYPE_OPTIONS } from "@repo/domain-definitions";
 import { fetchApi } from "@/hooks/useApi";
-import { useFuelHistory } from "@/hooks/home/useFuelHistory";
+import { useFuelHistory } from "@/hooks/shared/useFuelHistory";
 
 const fuelSchema = z
   .object({
