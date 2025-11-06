@@ -28,6 +28,7 @@ import { useSession } from "next-auth/react";
 import { FUEL_TYPE_OPTIONS } from "@repo/domain-definitions";
 import { fetchApi } from "@/hooks/useApi";
 import { useFuelHistory } from "@/hooks/shared/useFuelHistory";
+import { CheckCircle } from "lucide-react";
 
 const fuelSchema = z
   .object({
@@ -343,6 +344,7 @@ export default function CreateFuelEntry() {
                 Cancelar
               </Button>
               <Button type="submit" className="cursor-pointer">
+                <CheckCircle className="h-4 w-4" />
                 Salvar Abastecimento
               </Button>
             </div>

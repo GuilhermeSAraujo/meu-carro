@@ -345,7 +345,7 @@ export default function NewCarPage() {
               <Button
                 type="submit"
                 disabled={form.formState.isSubmitting}
-                className="w-full sm:w-auto gap-2"
+                className="w-full sm:w-auto gap-2 cursor-pointer"
               >
                 {form.formState.isSubmitting ? (
                   <>
