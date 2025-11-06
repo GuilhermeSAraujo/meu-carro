@@ -10,6 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Text } from "@/components/ui/text";
 import { useFuelHistory } from "@/hooks/shared/useFuelHistory";
 import { useSelectedCarReadonly } from "@/hooks/useSelectedCar";
@@ -60,51 +61,73 @@ export default function FuelPage() {
           )}
 
           <div className="mt-8">
-            <Table>
-              <TableCaption>Registros de abastecimento.</TableCaption>
-              <TableHeader className="bg-muted/50">
-                <TableRow>
-                  <TableHead className="font-bold text-center">Data</TableHead>
-                  <TableHead className="font-bold text-center">Tipo</TableHead>
-                  <TableHead className="font-bold text-center">Preço por litro</TableHead>
-                  <TableHead className="font-bold text-center">Preço total</TableHead>
-                  <TableHead className="font-bold text-center">Km</TableHead>
-                  <TableHead className="font-bold text-center">Litros</TableHead>
-                  <TableHead className="font-bold text-center">Encheu o tanque?</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {fuelHistory?.map((fuel) => (
-                  <TableRow key={fuel.id}>
-                    <TableCell className="text-center">
-                      {new Date(fuel.date).toLocaleDateString("pt-BR")}
-                    </TableCell>
-                    <TableCell className="text-center">
-                      {FUEL_TYPE_LABELS[fuel.fuelType as FuelType]}
-                    </TableCell>
-                    <TableCell className="text-center">
-                      {fuel.price.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-                    </TableCell>
-                    <TableCell className="text-center">
-                      {fuel.totalPrice.toLocaleString("pt-BR", {
-                        style: "currency",
-                        currency: "BRL",
-                      })}
-                    </TableCell>
-                    <TableCell className="text-center">
-                      {fuel.km.toLocaleString("pt-BR")} km
-                    </TableCell>
-                    <TableCell className="text-center">
-                      {fuel.volume.toLocaleString("pt-BR", {
-                        style: "decimal",
-                        maximumFractionDigits: 2,
-                      })}
-                    </TableCell>
-                    <TableCell className="text-center">{fuel.isFullTank ? "Sim" : "Não"}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            <Tabs defaultValue="history" className="w-full">
+              <TabsList>
+                <TabsTrigger value="history">Tabela</TabsTrigger>
+                <TabsTrigger value="analise">Análise</TabsTrigger>
+              </TabsList>
+              <TabsContent value="history" className="mt-4">
+                <Table>
+                  <TableCaption>Registros de abastecimento.</TableCaption>
+                  <TableHeader className="bg-muted/50">
+                    <TableRow>
+                      <TableHead className="font-bold text-center">Data</TableHead>
+                      <TableHead className="font-bold text-center">Tipo</TableHead>
+                      <TableHead className="font-bold text-center">Preço por litro</TableHead>
+                      <TableHead className="font-bold text-center">Preço total</TableHead>
+                      <TableHead className="font-bold text-center">Km</TableHead>
+                      <TableHead className="font-bold text-center">Litros</TableHead>
+                      <TableHead className="font-bold text-center">Encheu o tanque?</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {fuelHistory?.map((fuel) => (
+                      <TableRow key={fuel.id}>
+                        <TableCell className="text-center">
+                          {new Date(fuel.date).toLocaleDateString("pt-BR")}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {FUEL_TYPE_LABELS[fuel.fuelType as FuelType]}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {fuel.price.toLocaleString("pt-BR", {
+                            style: "currency",
+                            currency: "BRL",
+                          })}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {fuel.totalPrice.toLocaleString("pt-BR", {
+                            style: "currency",
+                            currency: "BRL",
+                          })}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {fuel.km.toLocaleString("pt-BR")} km
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {fuel.volume.toLocaleString("pt-BR", {
+                            style: "decimal",
+                            maximumFractionDigits: 2,
+                          })}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {fuel.isFullTank ? "Sim" : "Não"}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TabsContent>
+              <TabsContent value="analise" className="mt-4">
+                <div className="flex items-center justify-center min-h-[400px] border border-dashed border-muted-foreground/25 rounded-lg bg-muted/10">
+                  <div className="text-center">
+                    <Text variant="p" className="text-muted-foreground">
+                      Gráfico de análise será implementado em breve
+                    </Text>
+                  </div>
+                </div>
+              </TabsContent>
+            </Tabs>
           </div>
         </div>
       )}
