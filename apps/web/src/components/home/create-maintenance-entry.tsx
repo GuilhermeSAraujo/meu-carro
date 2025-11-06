@@ -24,6 +24,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { useMaintenanceDialog } from "@/hooks/home/useMaintenanceDialog";
 import { MAINTENANCE_TYPE_OPTIONS } from "@repo/domain-definitions";
+import { fetchApi } from "@/hooks/useApi";
+import { useSession } from "next-auth/react";
 
 const maintenanceSchema = z.object({
   date: z.string().min(1, "Data é obrigatória"),
@@ -37,7 +39,8 @@ const maintenanceSchema = z.object({
 type MaintenanceFormValues = z.infer<typeof maintenanceSchema>;
 
 export default function CreateMaintenanceEntry() {
-  const { isOpen, closeDialog } = useMaintenanceDialog();
+  const { isOpen, closeDialog, carId } = useMaintenanceDialog();
+  const { data: session } = useSession();
 
   const form = useForm<MaintenanceFormValues>({
     resolver: zodResolver(maintenanceSchema as any),
@@ -51,15 +54,31 @@ export default function CreateMaintenanceEntry() {
     },
   });
 
+  if (!carId) {
+    return null;
+  }
+
   const onSubmit = async (data: MaintenanceFormValues) => {
-    try {
-      console.log("Dados da manutenção:", data);
-      // TODO: Implementar chamada à API
-      closeDialog();
-      form.reset();
-    } catch (error) {
-      console.error("Erro ao salvar manutenção:", error);
-    }
+    await fetchApi(
+      "/maintenance/:carId",
+      "$post",
+      {
+        param: {
+          carId: carId,
+        },
+        json: {
+          date: data.date,
+          km: data.km,
+          type: data.type,
+          price: data.price,
+          local: data.local,
+          description: data.comment,
+        },
+      },
+      { session }
+    );
+    form.reset();
+    closeDialog();
   };
 
   function handleCloseDialog() {
@@ -67,8 +86,14 @@ export default function CreateMaintenanceEntry() {
     closeDialog();
   }
 
+  function handleOpenChange(open: boolean) {
+    if (!open) {
+      handleCloseDialog();
+    }
+  }
+
   return (
-    <Dialog open={isOpen} onOpenChange={closeDialog}>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Nova Manutenção</DialogTitle>

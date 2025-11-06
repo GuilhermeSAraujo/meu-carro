@@ -178,6 +178,15 @@ export async function fetchApi<
   if (!res.ok) {
     const errorData = data as Api.Error;
 
+    // Chama o callback de erro para mostrar o toast
+    const onErrorResult = onError(errorData);
+
+    // Se o erro for marcado como esperado, não lança o erro
+    if (onErrorResult && typeof onErrorResult === "object" && onErrorResult.expected) {
+      return data as Data; // Retorna os dados mesmo em caso de erro esperado
+    }
+
+    // Lança o erro para que o componente possa tratá-lo
     throw new HttpError(res, errorData);
   }
   return data;

@@ -146,8 +146,14 @@ export default function CreateFuelEntry() {
     closeDialog();
   }
 
+  function handleOpenChange(open: boolean) {
+    if (!open) {
+      handleCloseDialog();
+    }
+  }
+
   return (
-    <Dialog open={isOpen} onOpenChange={closeDialog}>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Novo Abastecimento</DialogTitle>

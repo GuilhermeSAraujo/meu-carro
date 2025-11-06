@@ -5,6 +5,7 @@ import { Hono } from "hono";
 import { authRoute } from "./auth/auth.route";
 import { handleAuth } from "./middleware/auth";
 import { handleCors } from "./middleware/cors";
+import { maintenanceRoute } from "./maintenance/maintenance.route";
 
 export const api = new Hono()
   .get("/healthz", (c) => c.json({ ok: true }))
@@ -12,6 +13,7 @@ export const api = new Hono()
   .use(handleCors(), handleAuth())
   .route("/cars", carsRoute)
   .route("/fuel", fuelRoute)
+  .route("/maintenance", maintenanceRoute)
   .onError(onError);
 
 export type ApiSchema = typeof api;

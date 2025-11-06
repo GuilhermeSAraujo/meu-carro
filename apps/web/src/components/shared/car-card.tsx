@@ -58,7 +58,7 @@ export default function CarCard({ car }: { car: CarData }) {
             <FuelHistory carId={car.id} />
           </div>
           <div className="flex-1">
-            <MaintenanceHistory />
+            <MaintenanceHistory carId={car.id} />
           </div>
         </div>
       </CardContent>
@@ -75,7 +75,7 @@ export default function CarCard({ car }: { car: CarData }) {
           variant="outline"
           className="flex-1 aspect-square bg-green-100 hover:bg-green-200 cursor-pointer"
           size="icon-lg"
-          onClick={openMaintenanceDialog}
+          onClick={() => openMaintenanceDialog(car.id)}
         >
           <Wrench className="h-6 w-6 text-emerald-900" />
         </Button>

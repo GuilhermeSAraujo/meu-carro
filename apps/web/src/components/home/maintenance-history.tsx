@@ -1,37 +1,70 @@
 import { Text } from "@/components/ui/text";
+import { useMaintenanceHistory } from "@/hooks/shared/useMaintenanceHistory";
+import { MAINTENANCE_TYPE_LABELS, MaintenanceType } from "@repo/domain-definitions";
 import { Wrench } from "lucide-react";
 
-export default function MaintenanceHistory() {
+export default function MaintenanceHistory({ carId }: { carId: string }) {
+  const { data, isLoading } = useMaintenanceHistory({ carId, maxResult: 3 });
+
+  if (isLoading) {
+    return (
+      <section className="flex items-start gap-3">
+        <div className="self-center">
+          <Wrench className="h-6 w-6 text-emerald-900 mt-1" />
+        </div>
+        <div className="flex-1 space-y-2">
+          <Text variant="p" className="!m-0 text-gray-500">
+            Carregando...
+          </Text>
+        </div>
+      </section>
+    );
+  }
+
+  if (!data || data.length === 0) {
+    return (
+      <section className="flex items-start gap-3">
+        <div className="self-center">
+          <Wrench className="h-6 w-6 text-emerald-900 mt-1" />
+        </div>
+        <div className="flex-1 space-y-2">
+          <Text variant="p" className="!m-0 text-gray-500">
+            Nenhuma manutenção registrada
+          </Text>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="flex items-start gap-3">
       <div className="self-center">
         <Wrench className="h-6 w-6 text-emerald-900 mt-1" />
       </div>
       <div className="flex-1 space-y-2">
-        <Text variant="p" className="!m-0">
-          {new Date().toLocaleDateString("pt-BR", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "2-digit",
-          })}{" "}
-          - <span className="font-bold">Troca de óleo</span>
-        </Text>
-        <Text variant="small" className="!m-0 text-gray-500">
-          {new Date().toLocaleDateString("pt-BR", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "2-digit",
-          })}{" "}
-          - <span className="font-bold">Troca de pastilhas de freio</span>
-        </Text>
-        <Text variant="small" className="!m-0 text-gray-500">
-          {new Date().toLocaleDateString("pt-BR", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "2-digit",
-          })}{" "}
-          - <span className="font-bold">Troca de pneu</span>
-        </Text>
+        {data
+          .slice()
+          .reverse()
+          .map((entry, index) => {
+            const date = new Date(entry.date).toLocaleDateString("pt-BR", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "2-digit",
+            });
+
+            return (
+              <Text
+                key={entry.id}
+                variant={index === 0 ? "p" : "small"}
+                className={index === 0 ? "!m-0" : "!m-0 text-gray-500"}
+              >
+                {date} -{" "}
+                <span className="font-bold">
+                  {MAINTENANCE_TYPE_LABELS[entry.type as MaintenanceType]}
+                </span>
+              </Text>
+            );
+          })}
       </div>
     </section>
   );

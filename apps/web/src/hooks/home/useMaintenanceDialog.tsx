@@ -4,10 +4,9 @@ import { createContext, useContext, useState, ReactNode } from "react";
 
 interface MaintenanceDialogContextType {
   isOpen: boolean;
-  openDialog: () => void;
+  openDialog: (carId: string) => void;
   closeDialog: () => void;
   carId?: string;
-  setCarId: (id: string) => void;
 }
 
 const MaintenanceDialogContext = createContext<MaintenanceDialogContextType | undefined>(undefined);
@@ -16,11 +15,14 @@ export function MaintenanceDialogProvider({ children }: { children: ReactNode })
   const [isOpen, setIsOpen] = useState(false);
   const [carId, setCarId] = useState<string>();
 
-  const openDialog = () => setIsOpen(true);
+  const openDialog = (id: string) => {
+    setCarId(id);
+    setIsOpen(true);
+  };
   const closeDialog = () => setIsOpen(false);
 
   return (
-    <MaintenanceDialogContext.Provider value={{ isOpen, openDialog, closeDialog, carId, setCarId }}>
+    <MaintenanceDialogContext.Provider value={{ isOpen, openDialog, closeDialog, carId }}>
       {children}
     </MaintenanceDialogContext.Provider>
   );

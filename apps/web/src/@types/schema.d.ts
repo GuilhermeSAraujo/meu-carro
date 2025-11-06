@@ -271,6 +271,139 @@ type ApiSchema = import("hono").Hono<
         };
       },
       "/fuel"
+    >
+  | import("hono/types").MergeSchemaPath<
+      {
+        "/:carId": {
+          $post: {
+            input: {
+              json: {
+                date: string;
+                km: number;
+                type: string;
+                price: number;
+                local: string;
+                description?: string | undefined;
+              };
+            } & {
+              param: {
+                carId: string;
+              };
+            };
+            output: {};
+            outputFormat: "json";
+            status: 201;
+          };
+        };
+      } & {
+        "/:carId": {
+          $get: {
+            input: {
+              query: {
+                maxResult?: unknown;
+              };
+            } & {
+              param: {
+                carId: string;
+              };
+            };
+            output: {
+              createdAt: string | null;
+              updatedAt: string | null;
+              deletedAt: string | null;
+              id: string;
+              userId: string;
+              carId: string;
+              date: string;
+              km: number;
+              type: string;
+              price: number;
+              local: string;
+            }[];
+            outputFormat: "json";
+            status: import("hono/utils/http-status").ContentfulStatusCode;
+          };
+        };
+      } & {
+        "/:carId/:maintenanceId": {
+          $get: {
+            input: {
+              param: {
+                carId: string;
+              } & {
+                maintenanceId: string;
+              };
+            };
+            output: {
+              createdAt: string | null;
+              updatedAt: string | null;
+              deletedAt: string | null;
+              id: string;
+              userId: string;
+              carId: string;
+              date: string;
+              km: number;
+              type: string;
+              price: number;
+              local: string;
+            };
+            outputFormat: "json";
+            status: import("hono/utils/http-status").ContentfulStatusCode;
+          };
+        };
+      } & {
+        "/:carId/:maintenanceId": {
+          $put: {
+            input: {
+              json: {
+                date: string;
+                km: number;
+                type: string;
+                price: number;
+                local: string;
+                description?: string | undefined;
+              };
+            } & {
+              param: {
+                carId: string;
+              } & {
+                maintenanceId: string;
+              };
+            };
+            output: {
+              createdAt: string | null;
+              updatedAt: string | null;
+              deletedAt: string | null;
+              id: string;
+              userId: string;
+              carId: string;
+              date: string;
+              km: number;
+              type: string;
+              price: number;
+              local: string;
+            };
+            outputFormat: "json";
+            status: import("hono/utils/http-status").ContentfulStatusCode;
+          };
+        };
+      } & {
+        "/:carId/:maintenanceId": {
+          $delete: {
+            input: {
+              param: {
+                carId: string;
+              } & {
+                maintenanceId: string;
+              };
+            };
+            output: null;
+            outputFormat: "body";
+            status: 204;
+          };
+        };
+      },
+      "/maintenance"
     >,
   "/"
 >;
