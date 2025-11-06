@@ -4,7 +4,7 @@ import { foreignKey, pgTable } from "drizzle-orm/pg-core";
 import { cars } from "./cars";
 import { getBaseTimestampColumns } from "./helpers";
 
-export const maintenance = pgTable(
+export const maintenances = pgTable(
   "maintenances",
   (t) => ({
     id: t
